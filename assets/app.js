@@ -35,9 +35,13 @@
       specs: ['16 oz', '20–40 vehicles per bottle', 'Up to 8 months'] },
     birdielux: { n: 'BirdieLux', fn: 'Golf cart washless cleaner', price: 19.99, v: 59846406373457, liq: '#7fd3ff' },
     xfresh:   { n: 'XFresh', fn: 'Golf cart interior cleaner', price: 19.99, v: 59846406013009, liq: '#9be36a' },
-    kit:      { n: 'Essentials Kit', fn: 'LuxPro + InteriorX + TireVenom', price: 39.99, v: 62697809150033, img: 'luxpro' },
+    kit:      { n: 'Essentials Kit', fn: 'LuxPro + InteriorX + TireVenom', price: 39.99, v: 62697809150033, pic: 'assets/img/kits/essentials.webp' },
+    foamsys:  { n: 'Foam Wash System', fn: 'LuxCannon + 2× LuxFoam', price: 79.99, v: 59835928772689, pic: 'assets/img/kits/foam.webp' },
+    paintsys: { n: 'Paint Care System', fn: 'LuxPro, LuxQuick, CeramicX + towels', price: 72.99, v: 59835922219089, pic: 'assets/img/kits/paint.webp' },
+    rimsys:   { n: 'Rim & Tire System', fn: 'WheelAssassin, TireVenom, brushes + pads', price: 85.99, v: 59835924316241, pic: 'assets/img/kits/rimtire.webp' },
+    platinum: { n: 'The Platinum System', fn: 'Every formula, brush and towel', price: 500, v: 59889398513745, pic: 'assets/img/kits/platinum.webp' },
   };
-  const imgOf = k => 'assets/img/bottles/' + (P[k].img || k) + '-sm.webp';
+  const imgOf = k => P[k].pic || 'assets/img/bottles/' + (P[k].img || k) + '-sm.webp';
   const nameHTML = p => p.em && p.n.endsWith(p.em) ? p.n.slice(0, -p.em.length).toUpperCase() + '<em>' + p.em.toUpperCase() + '</em>' : p.n.toUpperCase();
 
   /* ---------- intro: once per session, ?nointro skips ---------- */
@@ -51,32 +55,39 @@
   const onScroll = () => nav.classList.toggle('scrolled', scrollY > 30);
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-  /* ---------- THE SHELF ---------- */
-  const order = ['luxquick', 'interiorx', 'luxfoam', 'luxpro', 'ceramicx', 'wheelassassin', 'tirevenom', 'restorx'];
-  const shelf = $('#shelf'), feature = $('#feature');
-  shelf.innerHTML = order.map(k => `<button class="bt" role="tab" type="button" data-k="${k}" style="--liq:${P[k].liq}" aria-selected="false">
-      <img src="assets/img/bottles/${k}.webp" alt="${P[k].n} ${P[k].fn}" loading="lazy" decoding="async" /><span>${P[k].n}</span></button>`).join('');
-  function pick(k) {
-    const p = P[k];
-    $$('.bt', shelf).forEach(b => b.setAttribute('aria-selected', b.dataset.k === k));
-    feature.style.setProperty('--liq', p.liq);
-    const fig = p.photo
-      ? `<img src="assets/img/photo/${p.photo}.webp" alt="${p.n} in use" loading="lazy" decoding="async" />`
-      : `<div style="position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 70%,color-mix(in srgb,${p.liq} 38%,#0b0d0b),#060706)"></div>`;
-    feature.innerHTML = `<div>
-        <p class="ft-name">${nameHTML(p)}</p>
-        <p class="ft-fn">${p.fn}</p>
-        <p class="ft-txt">${p.txt}</p>
-        <ul class="ft-specs">${p.specs.map(s => `<li>${s}</li>`).join('')}</ul>
-        <div class="ft-buy"><span class="ft-price">${money(p.price)}</span>
-          <button class="btn btn-lime" type="button" data-add="${k}"><span>Add to cart</span></button></div>
-      </div>
-      <figure class="ft-fig">${fig}${p.photo ? '' : `<img class="ft-bottle" src="assets/img/bottles/${k}.webp" alt="" />`}</figure>`;
-    syncAdded();
-  }
-  shelf.addEventListener('click', e => { const b = e.target.closest('.bt'); if (b) pick(b.dataset.k); });
-  pick('luxpro');
-  requestAnimationFrame(() => { const b = $('.bt[data-k="luxpro"]', shelf); if (b && shelf.scrollWidth > shelf.clientWidth) shelf.scrollLeft = b.offsetLeft - shelf.clientWidth / 2 + b.clientWidth / 2; });
+  /* ---------- THE COLLECTION: in the order you use them, steps from each label ---------- */
+  const COL = [
+    ['luxfoam', 'wash', ['Fill the LuxCannon', 'Foam the whole car', 'Rinse'], 0],
+    ['luxpro', 'wash', ['Spray a panel', 'Wipe with a microfiber', 'Flip and buff'], null],
+    ['luxquick', 'paint', ['Spray', 'Wipe', 'Buff'], 2],
+    ['ceramicx', 'paint', ['Spray', 'Spread with an Edgeless Lux towel', 'Buff'], 3],
+    ['wheelassassin', 'wheels', ['Spray', 'Let it work, agitate with a wheel brush', 'Rinse'], 4],
+    ['tirevenom', 'wheels', ['Apply with an applicator pad', 'Wipe onto the sidewall', 'Let it dry'], 5],
+    ['interiorx', 'interior', ['Spray', 'Wipe', 'Done'], null],
+    ['restorx', 'interior', ['Apply with an applicator pad', 'Let it level', 'Done, no oily feel'], null],
+  ];
+  const colGrid = $('#colGrid');
+  colGrid.innerHTML = COL.map(([k, g, how, ch], i) => { const p = P[k]; return `<article class="cc" data-g="${g}" style="--liq:${p.liq}">
+      <div class="cc-stage"><span class="cc-no">${String(i + 1).padStart(2, '0')}</span>
+        <img class="cc-b" src="assets/img/bottles/${k}.webp" alt="${p.n} ${p.fn}" loading="lazy" decoding="async" />
+        <img class="cc-r" src="assets/img/bottles/${k}-sm.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
+      <div class="cc-body"><h3 class="cc-name">${p.n.replace(/^LuxWheel/, 'Wheel')}</h3><p class="cc-fn">${p.fn}</p>
+        <ol class="cc-how">${how.map(h => `<li>${h}</li>`).join('')}</ol>
+        <div class="cc-buy"><span class="cc-price">${money(p.price)}</span><button class="sx-add" type="button" data-add="${k}"><span>Add</span></button></div>
+        ${ch !== null ? `<button class="cc-watch" type="button" data-watch="${ch}"><i></i>Watch it in the film</button>` : ''}</div></article>`; }).join('');
+  const tabs = Array.from(document.querySelectorAll('.col-tabs button'));
+  tabs.forEach(b => b.addEventListener('click', () => {
+    tabs.forEach(x => x.setAttribute('aria-selected', x === b));
+    const g = b.dataset.g;
+    colGrid.querySelectorAll('.cc').forEach(c => { c.hidden = g !== 'all' && c.dataset.g !== g; });
+  }));
+  /* "watch it": jump the hero film to that chapter and play */
+  document.addEventListener('click', e => {
+    const w = e.target.closest('[data-watch]'); if (!w) return;
+    const i = +w.dataset.watch;
+    document.getElementById('bay').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => { if (window.__story && window.__storyCH) window.__story(window.__storyCH[i] + .05, true); }, 450);
+  });
 
   /* ---------- reviews: verbatim from their Judge.me widget ---------- */
   const R = [
@@ -102,8 +113,8 @@
     if (e.target === galN) { let n = 40; const t = setInterval(() => { n = Math.max(0, n - 3); galN.textContent = n; if (!n) clearInterval(t); }, 35); }
     io.unobserve(e.target);
   }), { threshold: 0.25 });
-  $$('.head, .feature, .vf, .lp-copy, .kit-copy, .story-copy, .story-photos, .close .wrap').forEach(el => { el.classList.add('rv-up'); io.observe(el); });
-  io.observe(galN); io.observe($('.kit-fan'));
+  $$('.head, .vf, .lp-copy, .sx-flag, .story-copy, .story-photos, .close .wrap').forEach(el => { el.classList.add('rv-up'); io.observe(el); });
+  io.observe(galN);
 
   /* ---------- CART: localStorage, checks out through a Shopify cart permalink ---------- */
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} };
