@@ -11,9 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Michroma&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="preload" as="image" href="assets/story/s-dirty-d.webp" />
+<link rel="preload" as="image" href="assets/story/poster-d.jpg" />
 <script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="assets/site.css?v=6" />
+<link rel="stylesheet" href="assets/site.css?v=7" />
 </head>
 <body>
 
@@ -51,10 +51,9 @@
 <main id="main">
 
 <!-- ============ HERO: the bay, a self-playing detail film ============ -->
-<section class="bay" id="bay" data-v="?v=7" data-ch="0">
+<section class="bay" id="bay" data-v="?v=10" data-ch="0" data-chapters="0,4.75,13.55,18.05,21.95,26.45,30.55">
   <div class="st-pin" id="top">
-    <canvas id="storyCv" aria-hidden="true"></canvas>
-    <img class="st-fallback" src="assets/story/s-gold-d.webp" alt="A detailed grey McLaren 720S in the LusterLux shop at sunset, the bay door open" />
+    <video class="st-vid" muted playsinline preload="auto" poster="assets/story/poster-d.jpg" aria-label="A dusty grey McLaren 720S rolls into the LusterLux shop and is foamed, rinsed, spot-wiped, coated, and has its wheels and tires done"></video>
     <i class="st-shade" aria-hidden="true"></i>
 
     <div class="st-chs">
@@ -66,40 +65,65 @@
       <div class="ch" data-c="1">
         <p class="ch-n">02 <b>·</b> Wash</p>
         <h2 class="big">Foam first. <span class="glow">Then rinse.</span></h2>
-        <p class="ch-sub">LuxFoam goes on first. Thick, clinging foam lifts the grit before a mitt ever touches the paint.</p>
-        <button class="ch-chip" type="button" data-add="luxfoam" style="--liq:#6a4cf0"><img src="assets/img/bottles/luxfoam-sm.webp" alt="" /><span><b>LuxFoam</b>Foam soap · $19.99</span><em>Add</em></button>
+        <p class="ch-sub">The foam does the work, so the mitt never drags grit across the paint.</p>
       </div>
       <div class="ch" data-c="2">
-        <p class="ch-n">03 <b>·</b> Inspect</p>
-        <h2 class="big">Now look <span class="glow">closer.</span></h2>
-        <p class="ch-sub">Rinsed in the Arizona sun, every hard-water spot shows under the hex lights.</p>
+        <p class="ch-n">03 <b>·</b> Spots</p>
+        <h2 class="big">Spots lift. <span class="glow">Shine stays.</span></h2>
+        <p class="ch-sub">A rinse that dries in Arizona sun leaves minerals behind. One mist, one pass, gone.</p>
       </div>
       <div class="ch" data-c="3">
-        <p class="ch-n">04 <b>·</b> Finish</p>
-        <h2 class="big">Spots lift. <span class="glow">Shine stays.</span></h2>
-        <p class="ch-sub">LuxQuick pulls fresh water spots, then leaves a slick layer that keeps the next round from sticking.</p>
-        <button class="ch-chip" type="button" data-add="luxquick" style="--liq:#2fd39a"><img src="assets/img/bottles/luxquick-sm.webp" alt="" /><span><b>LuxQuick</b>Detail spray · $17.99</span><em>Add</em></button>
+        <p class="ch-n">04 <b>·</b> Protect</p>
+        <h2 class="big">Water <span class="glow">stands up.</span></h2>
+        <p class="ch-sub">A ceramic layer in the time it takes to wipe a panel. Water beads and rolls straight off.</p>
       </div>
       <div class="ch" data-c="4">
-        <p class="ch-n">05 <b>·</b> Protect</p>
-        <h2 class="big">Water <span class="glow">stands up.</span></h2>
-        <p class="ch-sub">CeramicX lays down a ceramic layer in the time it takes to wipe a panel. Hard water beading, real gloss depth.</p>
-        <button class="ch-chip" type="button" data-add="ceramicx" style="--liq:#35b9e6"><img src="assets/img/bottles/ceramicx-sm.webp" alt="" /><span><b>CeramicX</b>Ceramic detail spray · $27.99</span><em>Add</em></button>
+        <p class="ch-n">05 <b>·</b> Wheels</p>
+        <h2 class="big">Brake dust, <span class="glow">gone.</span></h2>
+        <p class="ch-sub">Bonded brake dust, grease and road film break down, so the barrel rinses clean.</p>
       </div>
       <div class="ch" data-c="5">
-        <p class="ch-n">06 <b>·</b> Wheels</p>
-        <h2 class="big">The wheels <span class="glow">never were.</span></h2>
-        <p class="ch-sub">LuxWheelAssassin is fast on bonded brake dust, grease and road film, so the barrel comes clean with a fraction of the scrubbing.</p>
-        <button class="ch-chip" type="button" data-add="wheelassassin" style="--liq:#d9f21c"><img src="assets/img/bottles/wheelassassin-sm.webp" alt="" /><span><b>WheelAssassin</b>Wheel cleaner · $17.99</span><em>Add</em></button>
+        <p class="ch-n">06 <b>·</b> Tires</p>
+        <h2 class="big">Satin <span class="glow">black.</span></h2>
+        <p class="ch-sub">Even, dark sidewalls that dry to the touch, and none of it flung down your paint.</p>
       </div>
       <div class="ch" data-c="6">
         <p class="ch-n">07 <b>·</b> Done</p>
         <h2 class="big">Now it's <span class="glow">finished.</span></h2>
-        <p class="ch-sub">The detail isn't finished until it's LusterLux. Tell us what you drive and we'll build the shelf.</p>
+        <p class="ch-sub">Five bottles, one car. Tell us what you drive and we'll build your shelf.</p>
         <div class="ch-ctas">
           <button class="btn btn-lime" type="button" data-kit-open><span>Build my kit</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           <a class="btn btn-metal" href="#line"><span>Shop the line</span></a>
         </div>
+      </div>
+    </div>
+
+    <!-- the bottle doing the work in each chapter -->
+    <div class="st-prods">
+      <div class="pc" data-c="1" style="--liq:#6a4cf0">
+        <img class="pc-b" src="assets/img/bottles/luxfoam.webp" alt="LuxFoam bottle" />
+        <div class="pc-t"><small>On the paint</small><b>LuxFoam</b><em>Foam soap</em><p>Thick foam that clings and lifts the grit before anything touches the paint.</p>
+          <button class="pc-add" type="button" data-add="luxfoam"><span>$19.99</span><i>Add</i></button></div>
+      </div>
+      <div class="pc" data-c="2" style="--liq:#2fd39a">
+        <img class="pc-b" src="assets/img/bottles/luxquick.webp" alt="LuxQuick bottle" />
+        <div class="pc-t"><small>On the paint</small><b>LuxQuick</b><em>Detail spray</em><p>Pulls fresh water spots, then leaves a slick layer so the next round won't stick.</p>
+          <button class="pc-add" type="button" data-add="luxquick"><span>$17.99</span><i>Add</i></button></div>
+      </div>
+      <div class="pc" data-c="3" style="--liq:#35b9e6">
+        <img class="pc-b" src="assets/img/bottles/ceramicx.webp" alt="CeramicX bottle" />
+        <div class="pc-t"><small>On the paint</small><b>CeramicX</b><em>Ceramic detail spray</em><p>Spray, wipe, done. Hard-water beading and gloss depth for up to 8 months.</p>
+          <button class="pc-add" type="button" data-add="ceramicx"><span>$27.99</span><i>Add</i></button></div>
+      </div>
+      <div class="pc" data-c="4" style="--liq:#d9f21c">
+        <img class="pc-b" src="assets/img/bottles/wheelassassin.webp" alt="LuxWheelAssassin bottle" />
+        <div class="pc-t"><small>On the wheels</small><b>WheelAssassin</b><em>Wheel cleaner</em><p>Fast on bonded brake dust, so the wheels come clean with a fraction of the scrubbing.</p>
+          <button class="pc-add" type="button" data-add="wheelassassin"><span>$17.99</span><i>Add</i></button></div>
+      </div>
+      <div class="pc" data-c="5" style="--liq:#e9ecef">
+        <img class="pc-b" src="assets/img/bottles/tirevenom.webp" alt="TireVenom bottle" />
+        <div class="pc-t"><small>On the tires</small><b>TireVenom</b><em>Tire dressing</em><p>A no-sling satin dressing that dries to the touch and lasts up to 3 months.</p>
+          <button class="pc-add" type="button" data-add="tirevenom"><span>$22.99</span><i>Add</i></button></div>
       </div>
     </div>
 
@@ -109,9 +133,9 @@
       <button type="button" class="st-pill-go" data-kit-open>Build my kit</button>
     </div>
     <div class="st-ctl">
-      <button class="st-play" type="button" data-s="play" aria-label="Pause the film"><i></i></button>
+      <button class="st-play" type="button" data-s="play" aria-label="Play the film"><i></i></button>
       <div class="st-rail" role="group" aria-label="Chapters">
-        <button type="button"><span>Arrive</span></button><button type="button"><span>Wash</span></button><button type="button"><span>Inspect</span></button><button type="button"><span>Finish</span></button><button type="button"><span>Protect</span></button><button type="button"><span>Wheels</span></button><button type="button"><span>Done</span></button>
+        <button type="button"><span>Arrive</span></button><button type="button"><span>Wash</span></button><button type="button"><span>Spots</span></button><button type="button"><span>Protect</span></button><button type="button"><span>Wheels</span></button><button type="button"><span>Tires</span></button><button type="button"><span>Done</span></button>
       </div>
     </div>
   </div>
@@ -316,6 +340,6 @@
 <i class="scrim" id="scrim" data-cart-close></i>
 
 <script src="assets/app.js?v=4"></script>
-<script src="assets/story.js?v=9"></script>
+<script src="assets/story.js?v=10"></script>
 </body>
 </html>
