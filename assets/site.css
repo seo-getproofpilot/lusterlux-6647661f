@@ -544,3 +544,55 @@ h2{font-size:clamp(34px,4.8vw,72px);margin-top:18px}
   .col-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
   .col-tabs button{flex:none}
 }
+
+/* ===== the rest of the page, in the luxury system ===== */
+/* LuxPro: a plain framed photo, a Bodoni numeral, a hairline spec table */
+.vf{box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.vf-c{display:none}
+.vf-tag{left:20px;top:auto;bottom:20px;padding:0;background:none;font:400 8.5px var(--display);letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.vf::after{content:"";position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent);pointer-events:none}
+.vf-tag{z-index:1}
+.gal{gap:24px;align-items:flex-end}
+.gal-n{font:400 clamp(110px,12vw,180px)/.78 var(--head);font-variation-settings:normal;color:#fff;-webkit-text-stroke:0;
+  background:none;-webkit-background-clip:initial;background-clip:initial;text-shadow:none;filter:none}
+.gal-u{font:400 9px/1.6 var(--display);letter-spacing:.28em;color:var(--mut);padding-bottom:14px}
+.plate{background:none;box-shadow:none;border-top:1px solid rgba(255,255,255,.14);border-radius:0}
+.plate::before,.plate::after{display:none}
+.pl-row{padding:14px 0;border-top:1px solid rgba(255,255,255,.08);font-size:14px}
+.pl-head{padding-top:14px}
+.pl-head b{font:400 8.5px var(--display);letter-spacing:.26em}
+.pl-head b.lp{color:#fff}
+.pl-row b{font-weight:500}
+.pl-row b.yes{color:#fff}.pl-row b.yes::before{content:"";display:inline-block;width:10px;height:1px;background:#fff;vertical-align:middle;margin-right:8px}
+.pl-row b.no{color:rgba(255,255,255,.38)}.pl-row b.no::before{content:"— "}
+
+/* reels: square cut, quiet captions */
+.reel{border-radius:0;box-shadow:0 0 0 1px rgba(255,255,255,.1)}
+.reel figcaption{font:400 8px var(--display);letter-spacing:.24em;text-transform:uppercase}
+.reel figcaption b{display:block;margin-bottom:6px;font:600 17px var(--serif);letter-spacing:.05em;text-transform:none}
+
+/* story: square photos with a hairline, an editorial timeline */
+.sp{clip-path:none;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.sp1,.sp2{border:0}
+.road::before{width:1px;background:rgba(255,255,255,.18)}
+.road li::before{width:7px;height:7px;left:-27px;top:20px;background:#050605;box-shadow:0 0 0 1px rgba(255,255,255,.55);transform:none;border:0;border-radius:50%}
+.road li.now::before{background:#fff;box-shadow:0 0 0 1px #fff}
+.road b{font:400 22px/1.2 var(--head);font-style:normal;text-transform:none;letter-spacing:-.005em}
+.sig{font:400 italic 28px var(--head)}
+.sig span{font:400 8.5px var(--display);font-style:normal;letter-spacing:.26em;margin-top:6px}
+
+/* reviews: platinum stars, Bodoni quote mark */
+.stars{color:#e9e5dc;font-size:22px;letter-spacing:8px}
+.rv q::before{font:400 64px/.7 var(--head);color:rgba(255,255,255,.5)}
+.rv p{font:400 8.5px var(--display);letter-spacing:.24em}
+.rv p span{color:#e9e5dc}
+
+/* close: no green glow, Bodoni figures between hairlines */
+.close{background:radial-gradient(60% 70% at 50% 40%,rgba(255,255,255,.05),transparent 70%),#050605}
+.close-badge{opacity:.05;filter:grayscale(1)}
+.promise{display:flex;flex-wrap:nowrap;justify-content:center;gap:0;margin-top:56px;padding:0;list-style:none;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12)}
+.promise li{flex:1;max-width:260px;padding:22px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  font:400 8.5px var(--display);letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
+.promise li+li{border-left:1px solid rgba(255,255,255,.12)}
+.promise b{font:400 34px/1 var(--head);font-style:normal;letter-spacing:-.01em;text-transform:none;color:#fff;font-variation-settings:normal}
+@media (max-width:560px){.promise b{font-size:24px}.promise li{padding:18px 4px;letter-spacing:.16em}}
