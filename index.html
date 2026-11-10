@@ -10,10 +10,10 @@
 <link rel="icon" href="assets/img/brand/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Michroma&family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="preload" as="image" href="assets/story/s-dirty-d.webp" />
 <script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="assets/site.css?v=5" />
+<link rel="stylesheet" href="assets/site.css?v=6" />
 </head>
 <body>
 
@@ -46,34 +46,26 @@
       <b class="cart-n" id="cartN" hidden>0</b>
     </button>
   </div>
-  <div class="strip" aria-hidden="true">
-    <div class="strip-run">
-      <span>Tested in 115° Arizona heat</span><span>Safe on paint, PPF, wraps &amp; ceramic</span><span>30-day money-back guarantee</span><span>Free shipping on $35+</span>
-      <span>Tested in 115° Arizona heat</span><span>Safe on paint, PPF, wraps &amp; ceramic</span><span>30-day money-back guarantee</span><span>Free shipping on $35+</span>
-    </div>
-  </div>
 </header>
 
 <main id="main">
 
-<!-- ============ HERO: the bay, a scroll-driven detail ============ -->
-<section class="bay" id="bay" data-v="?v=6" data-na="81" data-nb="101" data-ch="0">
+<!-- ============ HERO: the bay, a self-playing detail film ============ -->
+<section class="bay" id="bay" data-v="?v=7" data-ch="0">
   <div class="st-pin" id="top">
     <canvas id="storyCv" aria-hidden="true"></canvas>
     <img class="st-fallback" src="assets/story/s-gold-d.webp" alt="A detailed grey McLaren 720S in the LusterLux shop at sunset, the bay door open" />
     <i class="st-shade" aria-hidden="true"></i>
 
-    <p class="st-status"><i></i>Made in Arizona <b>·</b> Ships free over $35</p>
-
     <div class="st-chs">
       <div class="ch" data-c="0">
         <p class="ch-n">01 <b>·</b> Arrive</p>
         <h1 class="big">Rolled in <span class="glow">dirty.</span></h1>
-        <p class="ch-sub">Four hundred miles of Arizona, baked on. Scroll, and watch LusterLux take it from here.</p>
+        <p class="ch-sub">Four hundred miles of Arizona, baked on. Watch LusterLux take it from here.</p>
       </div>
       <div class="ch" data-c="1">
         <p class="ch-n">02 <b>·</b> Wash</p>
-        <h2 class="big">Scroll to <span class="glow">wash it.</span></h2>
+        <h2 class="big">Foam first. <span class="glow">Then rinse.</span></h2>
         <p class="ch-sub">LuxFoam goes on first. Thick, clinging foam lifts the grit before a mitt ever touches the paint.</p>
         <button class="ch-chip" type="button" data-add="luxfoam" style="--liq:#6a4cf0"><img src="assets/img/bottles/luxfoam-sm.webp" alt="" /><span><b>LuxFoam</b>Foam soap · $19.99</span><em>Add</em></button>
       </div>
@@ -116,7 +108,12 @@
       <button type="button" data-kit-open><small>Jobs</small><b id="pillJobs">Wash · Protect</b></button>
       <button type="button" class="st-pill-go" data-kit-open>Build my kit</button>
     </div>
-    <div class="st-bar" aria-hidden="true"><i id="storyBar"></i></div>
+    <div class="st-ctl">
+      <button class="st-play" type="button" data-s="play" aria-label="Pause the film"><i></i></button>
+      <div class="st-rail" role="group" aria-label="Chapters">
+        <button type="button"><span>Arrive</span></button><button type="button"><span>Wash</span></button><button type="button"><span>Inspect</span></button><button type="button"><span>Finish</span></button><button type="button"><span>Protect</span></button><button type="button"><span>Wheels</span></button><button type="button"><span>Done</span></button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -319,6 +316,6 @@
 <i class="scrim" id="scrim" data-cart-close></i>
 
 <script src="assets/app.js?v=4"></script>
-<script src="assets/story.js?v=7"></script>
+<script src="assets/story.js?v=9"></script>
 </body>
 </html>
