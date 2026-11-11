@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>LusterLux — Bottle Prototype</title>
+<link rel="icon" href="assets/img/brand/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Michroma&family=Cinzel:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#070807; --ink:#f2f1ed; --mut:rgba(242,241,237,.66); --dim:rgba(242,241,237,.4);
+  --line:rgba(242,241,237,.14); --pearl:#ecebe6; --plat:#d9d5ca; --liq:#ec4fc6;
+  --head:"Bodoni Moda",Georgia,serif; --cap:"Michroma",system-ui,sans-serif; --serif:"Cinzel",serif; --body:"Inter",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{font:400 16px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+.nav{position:fixed;inset:0 0 auto;z-index:20;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,3.4vw,48px)}
+.nav img{height:42px;width:auto}
+.nav ul{display:flex;gap:34px;list-style:none;font:400 9.5px/1 var(--cap);letter-spacing:.26em;text-transform:uppercase;color:var(--mut)}
+.nav ul a:hover{color:var(--ink)}
+.cartbtn{font:400 9.5px/1 var(--cap);letter-spacing:.26em;text-transform:uppercase;border:1px solid var(--line);padding:12px 16px}
+
+.hero{position:relative;height:100svh;min-height:640px;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.copy{position:absolute;z-index:3;left:clamp(16px,6vw,110px);top:50%;transform:translateY(-46%);max-width:min(520px,38vw)}
+.kick{display:flex;align-items:center;gap:14px;font:400 9.5px/1 var(--cap);letter-spacing:.34em;text-transform:uppercase;color:var(--plat)}
+.kick i{width:30px;height:1px;background:var(--plat)}
+h1{font:400 clamp(44px,5.4vw,90px)/.98 var(--head);letter-spacing:-.02em;margin-top:26px}
+h1 em{display:block;font-style:italic;background:linear-gradient(180deg,#fff 0%,#d9d5ca 48%,#8f8b80 52%,#efede8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{margin-top:24px;max-width:42ch;color:var(--mut);font-size:clamp(15px,1.1vw,17px)}
+
+/* staged entrance: copy waits for the bottle to finish forming */
+.st{opacity:0;transform:translateY(14px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.ready .st{opacity:1;transform:none}
+.ready .st.d1{transition-delay:.08s}.ready .st.d2{transition-delay:.16s}.ready .st.d3{transition-delay:.26s}.ready .st.d4{transition-delay:.36s}
+
+.prod{margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+.prod .nm{font:600 clamp(22px,1.9vw,28px)/1 var(--serif);letter-spacing:.04em}
+.prod .nm span{color:var(--liq);transition:color .6s}
+.prod .fn{margin-top:8px;font:400 8.5px/1.4 var(--cap);letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:14px;height:54px;padding:0 26px;font:400 9.5px/1 var(--cap);letter-spacing:.24em;
+  text-transform:uppercase;transition:background .25s,border-color .25s}
+.btn.solid{background:var(--pearl);color:#0a0a0a}.btn.solid:hover{background:#fff}
+.btn.line{border:1px solid var(--line)}.btn.line:hover{border-color:var(--plat)}
+.btn b{font-weight:400;opacity:.55}
+
+.picker{position:absolute;z-index:3;left:50%;bottom:clamp(18px,4vh,40px);transform:translateX(-50%);display:flex;gap:6px;
+  padding:6px;border:1px solid var(--line);background:rgba(7,8,7,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.picker button{display:flex;align-items:center;gap:10px;height:40px;padding:0 16px;font:400 8.5px/1 var(--cap);letter-spacing:.22em;
+  text-transform:uppercase;color:var(--dim);transition:color .3s,background .3s}
+.picker button i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.picker button[aria-pressed=true]{color:var(--ink);background:rgba(255,255,255,.06)}
+.picker button:hover{color:var(--ink)}
+
+/* spec callouts, pinned to points on the bottle each frame */
+.co{position:absolute;z-index:3;left:0;top:0;display:flex;align-items:center;gap:12px;pointer-events:none;white-space:nowrap;
+  font:400 8.5px/1 var(--cap);letter-spacing:.26em;text-transform:uppercase;color:var(--mut);opacity:0;transition:opacity .6s}
+.co i{display:block;height:1px;width:clamp(50px,6vw,110px);background:linear-gradient(90deg,var(--plat),rgba(217,213,202,.25))}
+.co b{display:block;width:5px;height:5px;border:1px solid var(--plat);transform:rotate(45deg);margin-right:-8px}
+.ready .co.on{opacity:1}
+
+.hint{position:absolute;z-index:3;right:clamp(16px,3.4vw,48px);bottom:clamp(24px,4.6vh,46px);font:400 8px/1 var(--cap);letter-spacing:.3em;
+  text-transform:uppercase;color:var(--dim)}
+
+.after{padding:80px clamp(16px,6vw,110px) 120px;max-width:1100px;color:var(--dim);font-size:13px}
+.after p+p{margin-top:10px}
+
+@media (max-width:900px){
+  .nav ul{display:none}.nav{height:64px}.nav img{height:36px}
+  .hero{height:auto;min-height:0;display:flex;flex-direction:column}
+  #gl{position:relative;height:66svh;min-height:460px;order:1;-webkit-mask-image:linear-gradient(#000 82%,transparent);mask-image:linear-gradient(#000 82%,transparent)}
+  .kick{font-size:8px;letter-spacing:.26em}
+  .copy{position:relative;order:2;left:auto;top:auto;transform:none;max-width:none;padding:6px 20px 34px}
+  h1{font-size:clamp(38px,10.6vw,54px);margin-top:16px}
+  .picker{position:relative;order:3;left:auto;bottom:auto;transform:none;margin:0 16px 40px;overflow-x:auto;justify-content:space-between}
+  .picker button{padding:0 10px;font-size:7.5px;letter-spacing:.16em}
+  .co,.hint{display:none}
+}
+</style>
+<script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html"><img src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" /></a>
+  <ul><li><a href="#">Shop</a></li><li><a href="#">Kits</a></li><li><a href="#">How to use</a></li><li><a href="#">Our story</a></li></ul>
+  <a class="cartbtn" href="https://lusterluxauto.com/cart">Cart</a>
+</nav>
+
+<header class="hero" id="hero">
+  <canvas id="gl" aria-label="A LusterLux bottle forming from its formula, then turning under studio light"></canvas>
+  <div class="copy">
+    <p class="kick st"><i></i>Formulated in the Arizona desert</p>
+    <h1 class="st d1">Pro results. <em>One bottle.</em></h1>
+    <p class="lede st d2">Every LusterLux formula is built and tested on real cars in the Arizona heat by the two founders, who started at 18. No hose, no bucket, no guesswork.</p>
+    <div class="prod st d3">
+      <p class="nm" id="pnm">Lux<span>Pro</span></p>
+      <p class="fn" id="pfn">Waterless wash &amp; surface protectant</p>
+      <div class="ctas">
+        <a class="btn solid" id="padd" href="https://lusterluxauto.com/cart/59846340902993:1">Add to cart <b id="ppr">$19.99</b></a>
+        <a class="btn line" href="https://lusterluxauto.com/collections/all">Shop all</a>
+      </div>
+    </div>
+  </div>
+  <div class="co" id="co0"><b></b><i></i><span></span></div>
+  <div class="co" id="co1"><b></b><i></i><span></span></div>
+  <div class="co" id="co2"><b></b><i></i><span></span></div>
+  <div class="picker st d4" id="picker" role="group" aria-label="Choose a product"></div>
+  <p class="hint st d4">Scroll to turn</p>
+</header>
+
+<section class="after">
+  <p>Prototype. The bottle is rendered live in WebGL. Its silhouette is measured from LusterLux's studio photos, and each label is unwrapped from those same photos (tools/bottle.py). No AI imagery.</p>
+  <p style="height:60vh"></p>
+</section>
+
+<script type="module">
+import * as THREE from 'three';
+
+const PRODUCTS = {
+  luxpro:    { n: ['Lux', 'Pro'],      fn: 'Waterless wash & surface protectant', price: 19.99, v: 59846340902993, liq: '#ec4fc6',
+               specs: ['16 fl oz · 473 mL', '15–30 vehicles per bottle', 'Safe on PPF, wraps & ceramic'] },
+  luxquick:  { n: ['Lux', 'Quick'],    fn: 'Detail spray',                        price: 17.99, v: 59846342246481, liq: '#2fd39a',
+               specs: ['16 fl oz · 473 mL', '15–25 vehicles per bottle', 'Dust, prints & fresh water spots'] },
+  interiorx: { n: ['Interior', 'X'],   fn: 'Interior cleaner',                    price: 19.99, v: 59846363545681, liq: '#e9e59a',
+               specs: ['16 fl oz · 473 mL', '15–25 vehicles per bottle', 'No slick residue'] },
+  restorx:   { n: ['Restor', 'X'],     fn: 'RVP plastic dressing',                price: 22.99, v: 59846342377553, liq: '#f1e4dc',
+               specs: ['16 fl oz · 473 mL', '20–40 vehicles per bottle', 'Up to 8 months'] },
+};
+const ORDER = ['luxpro', 'luxquick', 'interiorx', 'restorx'];
+let current = 'luxpro';
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('gl');
+const hero = document.getElementById('hero');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.localClippingEnabled = true;
+
+const BG = new THREE.Color('#070807');
+const scene = new THREE.Scene();
+const backdrop = document.createElement('canvas'); backdrop.width = 1024; backdrop.height = 640;
+function paintBackdrop(cx) {
+  const x = backdrop.getContext('2d'); x.fillStyle = '#070807'; x.fillRect(0, 0, 1024, 640);
+  const g = x.createRadialGradient(cx * 1024, 250, 0, cx * 1024, 250, 560);
+  g.addColorStop(0, '#202220'); g.addColorStop(.45, '#0f100f'); g.addColorStop(1, '#070807');
+  x.fillStyle = g; x.fillRect(0, 0, 1024, 640);
+  if (scene.background) scene.background.needsUpdate = true;
+}
+paintBackdrop(.6);
+scene.background = new THREE.CanvasTexture(backdrop); scene.background.colorSpace = THREE.SRGBColorSpace;
+const camera = new THREE.PerspectiveCamera(26, 1, .1, 100);
+
+// ---------- studio: strip softboxes baked into an environment map ----------
+{
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x000000);
+  const strip = (w, h, x, y, z, k, ry = 0) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, y, 0); m.rotation.z += ry; env.add(m);
+  };
+  strip(1.4, 14, -7, 2, 3, 6);       // key strip, front left
+  strip(1.0, 14, 7.5, 2, 1.5, 3.2);  // fill strip, right
+  strip(0.6, 12, 4, 2, -7, 4);       // rim, behind right
+  strip(0.6, 12, -4, 2, -7, 2.4);    // rim, behind left
+  const top = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.2, 1.2, 1.2) }));
+  top.position.set(0, 9, 0); top.rotation.x = Math.PI / 2; env.add(top);
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(env, .015).texture;
+}
+const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(-5, 8, 7); scene.add(key);
+const rim = new THREE.DirectionalLight(0xdfe9ff, 1.6); rim.position.set(6, 5, -6); scene.add(rim);
+
+// ---------- the bottle, from the measured profile (units: body radius = 1) ----------
+const P = [[0, 0], [.84, 0], [.94, .025], [.985, .1], [.998, .28], [1, 1.2], [.988, 4.0], [.976, 5.42], [.962, 5.53], [.9, 5.62],
+           [.78, 5.69], [.64, 5.745], [.55, 5.78], [.535, 5.8], [.565, 5.815], [.565, 5.855], [.515, 5.87], [.505, 5.95]];
+const rAt = y => { for (let i = 1; i < P.length; i++) if (y <= P[i][1]) { const [r0, y0] = P[i - 1], [r1, y1] = P[i]; return r0 + (r1 - r0) * (y - y0) / (y1 - y0 || 1); } return P[P.length - 1][0]; };
+const FILL = 5.6, LAB = [.43, 5.17], CAPY = 5.9;
+
+const clipGlass = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+const clipLiquid = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+
+const bottle = new THREE.Group(); scene.add(bottle);
+const spin = new THREE.Group(); bottle.add(spin);
+
+const glassMat = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff, metalness: 0, roughness: .045, transmission: 1, thickness: .25, ior: 1.42,
+  specularIntensity: 1, envMapIntensity: 1.6, clearcoat: 1, clearcoatRoughness: .03, clippingPlanes: [clipGlass],
+});
+const glass = new THREE.Mesh(new THREE.LatheGeometry(P.map(([r, y]) => new THREE.Vector2(r, y)), 160), glassMat);
+spin.add(glass);
+
+const liqPts = [new THREE.Vector2(0, .05)];
+for (const [r, y] of P) if (y > .02 && y < FILL) liqPts.push(new THREE.Vector2(Math.max(.001, r * .955), Math.max(.05, y)));
+liqPts.push(new THREE.Vector2(rAt(FILL) * .955, FILL), new THREE.Vector2(0, FILL));
+const liqMat = new THREE.MeshPhysicalMaterial({
+  color: new THREE.Color(PRODUCTS.luxpro.liq), roughness: .22, metalness: 0, clearcoat: .6, envMapIntensity: .9,
+  emissive: new THREE.Color(PRODUCTS.luxpro.liq), emissiveIntensity: .1, clippingPlanes: [clipLiquid],
+});
+const liquid = new THREE.Mesh(new THREE.LatheGeometry(liqPts, 128), liqMat);
+spin.add(liquid);
+
+const loader = new THREE.TextureLoader();
+const labels = {};
+const loadLabel = k => labels[k] || (labels[k] = loader.loadAsync(`assets/bottle3d/label-${k}.webp`).then(t => {
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); return t;
+}));
+const labPts = [];
+for (let i = 0; i <= 48; i++) { const y = LAB[0] + (LAB[1] - LAB[0]) * i / 48; labPts.push(new THREE.Vector2(rAt(y) + .006, y)); }
+const labelMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: .34, metalness: 0, clearcoat: 1, clearcoatRoughness: .1,
+  envMapIntensity: 1.1, clippingPlanes: [clipGlass] });
+const label = new THREE.Mesh(new THREE.LatheGeometry(labPts, 160, Math.PI), labelMat);
+spin.add(label);
+
+// knurled cap
+const knurl = document.createElement('canvas'); knurl.width = 512; knurl.height = 8;
+{ const x = knurl.getContext('2d'); for (let i = 0; i < 512; i += 4) { x.fillStyle = '#fff'; x.fillRect(i, 0, 2, 8); x.fillStyle = '#000'; x.fillRect(i + 2, 0, 2, 8); } }
+const knurlTex = new THREE.CanvasTexture(knurl);
+const capMat = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0d, roughness: .42, metalness: 0, clearcoat: .4, clearcoatRoughness: .3,
+  bumpMap: knurlTex, bumpScale: 2.2, envMapIntensity: 1.2 });
+const capProfile = [[0, 0], [.515, 0], [.522, .02], [.522, .5], [.512, .56], [.47, .585], [0, .59]].map(([r, y]) => new THREE.Vector2(r, y));
+const cap = new THREE.Mesh(new THREE.LatheGeometry(capProfile, 128), capMat);
+cap.position.y = CAPY; spin.add(cap);
+
+// forming ring that scans up the bottle
+const ring = new THREE.Mesh(new THREE.TorusGeometry(1, .008, 8, 160), new THREE.MeshBasicMaterial({ color: new THREE.Color(3, 3, 3), transparent: true, opacity: 0 }));
+ring.rotation.x = Math.PI / 2; bottle.add(ring);
+
+// ---------- floor: soft reflection, contact shadow, back glow ----------
+const radial = (stops, size = 512) => {
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
+  const g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  for (const [o, col] of stops) g.addColorStop(o, col); x.fillStyle = g; x.fillRect(0, 0, size, size);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+};
+const mirror = new THREE.Group(); mirror.scale.y = -1; bottle.add(mirror);
+const mGlass = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: .1, transparent: true, opacity: .18, side: THREE.BackSide, envMapIntensity: 1.4 });
+const mLiq = liqMat.clone(); mLiq.side = THREE.BackSide; mLiq.clippingPlanes = [];
+const mLab = labelMat.clone(); mLab.side = THREE.BackSide; mLab.clippingPlanes = [];
+const mCap = capMat.clone(); mCap.side = THREE.BackSide;
+const mSpin = new THREE.Group(); mirror.add(mSpin);
+mSpin.add(new THREE.Mesh(glass.geometry, mGlass), new THREE.Mesh(liquid.geometry, mLiq), new THREE.Mesh(label.geometry, mLab));
+const mCapMesh = new THREE.Mesh(cap.geometry, mCap); mCapMesh.position.y = CAPY; mSpin.add(mCapMesh);
+mirror.visible = false;
+
+const floorMat = new THREE.MeshBasicMaterial({ color: BG, transparent: true, opacity: 1, depthWrite: false,
+  alphaMap: radial([[0, '#dcdcdc'], [.3, '#e4e4e4'], [.55, '#9a9a9a'], [1, '#000000']]) });
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), floorMat);
+floor.rotation.x = -Math.PI / 2; floor.position.y = .001; floor.renderOrder = 1; bottle.add(floor);
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), new THREE.MeshBasicMaterial({ map: radial([[0, 'rgba(0,0,0,.85)'], [.45, 'rgba(0,0,0,.45)'], [1, 'rgba(0,0,0,0)']]),
+  transparent: true, depthWrite: false, opacity: 0 }));
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = .004; shadow.renderOrder = 2; bottle.add(shadow);
+
+// ---------- the formula: molecule chains that condense into the liquid ----------
+const CH = reduce ? 0 : 1100, PER = 4, N = CH * PER;
+const pos = new Float32Array(N * 3), start = new Float32Array(N * 3), target = new Float32Array(N * 3), off = new Float32Array(N * 3);
+const delay = new Float32Array(CH);
+const tmpT = [];
+for (let c = 0; c < CH; c++) {
+  // target: a random point inside the liquid volume
+  let y = .1 + Math.pow(Math.random(), .9) * (FILL - .2), a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * rAt(y) * .9;
+  tmpT.push([y, a, r]);
+}
+tmpT.sort((p, q) => p[0] - q[0]);
+for (let c = 0; c < CH; c++) {
+  const [y, a, r] = tmpT[c];
+  delay[c] = (c / CH) * 1.25 + Math.random() * .25;
+  const sa = Math.random() * Math.PI * 2, sr = 4 + Math.random() * 6, sy = -2 + Math.random() * 10;
+  const dir = new THREE.Vector3().randomDirection();
+  for (let k = 0; k < PER; k++) {
+    const i = (c * PER + k) * 3;
+    target[i] = Math.cos(a) * r + (Math.random() - .5) * .04; target[i + 1] = y + (Math.random() - .5) * .04; target[i + 2] = Math.sin(a) * r;
+    start[i] = Math.cos(sa) * sr; start[i + 1] = sy; start[i + 2] = Math.sin(sa) * sr;
+    // zig-zag chain shape, like a polymer strand
+    off[i] = dir.x * k * .16 + (k % 2) * .06; off[i + 1] = dir.y * k * .16; off[i + 2] = dir.z * k * .16 - (k % 2) * .05;
+  }
+}
+const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+const pMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uColor: { value: new THREE.Color(PRODUCTS.luxpro.liq) }, uOpacity: { value: 1 }, uSize: { value: 44 * renderer.getPixelRatio() } },
+  vertexShader: `uniform float uSize; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); gl_PointSize = uSize / -mv.z; gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `uniform vec3 uColor; uniform float uOpacity; void main(){ float d = length(gl_PointCoord - .5); if(d>.5) discard;
+    float core = smoothstep(.5,.0,d); vec3 c = mix(uColor, vec3(1.), smoothstep(.22,.0,d)*.8); gl_FragColor = vec4(c, core*uOpacity*.9); }`,
+});
+const points = new THREE.Points(pGeo, pMat); spin.add(points);
+const lIdx = []; for (let c = 0; c < CH; c++) for (let k = 0; k < PER - 1; k++) lIdx.push(c * PER + k, c * PER + k + 1);
+const lGeo = new THREE.BufferGeometry(); lGeo.setAttribute('position', pGeo.getAttribute('position')); lGeo.setIndex(lIdx);
+const lMat = new THREE.LineBasicMaterial({ color: new THREE.Color(PRODUCTS.luxpro.liq), transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false });
+const lines = new THREE.LineSegments(lGeo, lMat); spin.add(lines);
+
+// ---------- layout ----------
+let mobile = false, W = 1, H = 1;
+function layout() {
+  const r = canvas.getBoundingClientRect(); W = r.width; H = r.height;
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  mobile = innerWidth <= 900;
+  const frac = mobile ? .62 : .70;                    // share of height the bottle fills
+  const vh = 6.4 / frac, d = vh / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+  camera.position.set(0, 3.55 + vh * .02, d); camera.lookAt(0, mobile ? 2.75 : 3.05, 0);
+  camera.updateProjectionMatrix();
+  const vw = vh * camera.aspect;
+  bottle.position.x = mobile ? 0 : vw * .1;
+  paintBackdrop(mobile ? .5 : .6);
+}
+layout(); addEventListener('resize', layout);
+
+// ---------- UI ----------
+const picker = document.getElementById('picker');
+for (const k of ORDER) {
+  const b = document.createElement('button'); b.type = 'button'; b.dataset.k = k; b.setAttribute('aria-pressed', k === current);
+  b.style.setProperty('--c', PRODUCTS[k].liq); b.innerHTML = `<i></i>${PRODUCTS[k].n.join('')}`;
+  b.addEventListener('click', () => choose(k)); picker.appendChild(b);
+}
+const cos = [0, 1, 2].map(i => document.getElementById('co' + i));
+const anchors = [new THREE.Vector3(.56, CAPY + .3, 0), new THREE.Vector3(1.02, 3.6, 0), new THREE.Vector3(1.0, 1.25, 0)];
+function setCopy(k) {
+  const p = PRODUCTS[k];
+  document.documentElement.style.setProperty('--liq', p.liq);
+  document.getElementById('pnm').innerHTML = `${p.n[0]}<span>${p.n[1]}</span>`;
+  document.getElementById('pfn').textContent = p.fn;
+  document.getElementById('ppr').textContent = '$' + p.price.toFixed(2);
+  document.getElementById('padd').href = `https://lusterluxauto.com/cart/${p.v}:1`;
+  cos.forEach((c, i) => { c.querySelector('span').textContent = p.specs[i] || ''; c.classList.toggle('on', !!p.specs[i]); });
+  for (const b of picker.children) b.setAttribute('aria-pressed', b.dataset.k === k);
+}
+
+// product switch: a fast turn; the label swaps while its blank back faces the camera
+let turn = null;
+const liqTarget = new THREE.Color(PRODUCTS.luxpro.liq);
+async function choose(k) {
+  if (k === current || turn) return;
+  const tex = await loadLabel(k);
+  current = k; setCopy(k);
+  liqTarget.set(PRODUCTS[k].liq);
+  turn = { t0: performance.now(), dur: reduce ? 1 : 1150, from: spin.rotation.y, swapped: false, tex };
+}
+
+// ---------- motion ----------
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const outBack = t => { const c1 = 1.3, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const sm = (a, b, t) => { const x = Math.min(1, Math.max(0, (t - a) / (b - a))); return x * x * (3 - 2 * x); };
+let T0 = null, ready = false, px = 0, pxT = 0, rotY = 0;
+addEventListener('pointermove', e => { pxT = (e.clientX / innerWidth - .5); });
+
+const v3 = new THREE.Vector3();
+function placeCallouts() {
+  if (mobile) return;
+  anchors.forEach((a, i) => {
+    v3.copy(a); v3.x += 0; bottle.localToWorld(v3); v3.project(camera);
+    const x = (v3.x * .5 + .5) * W, y = (-v3.y * .5 + .5) * H;
+    cos[i].style.transform = `translate(${x}px,${y - 4}px)`;
+  });
+}
+
+function frame(now) {
+  if (T0 === null) T0 = now;
+  const T = reduce ? 9 : (now - T0) / 1000;
+
+  // 1. chains spiral in and condense, lowest first, so the liquid fills from the bottom
+  if (CH) {
+    for (let c = 0; c < CH; c++) {
+      const t = Math.min(1, Math.max(0, (T - delay[c]) / 1.5)), e = ease(t), sw = (1 - e) * 1.6;
+      const cs = Math.cos(sw), sn = Math.sin(sw);
+      for (let k = 0; k < PER; k++) {
+        const i = (c * PER + k) * 3;
+        const sx = start[i] + off[i] * (1 - e) * 3, sz = start[i + 2] + off[i + 2] * (1 - e) * 3, sy = start[i + 1] + off[i + 1] * (1 - e) * 3 + Math.sin(T * 1.3 + c) * .15 * (1 - e);
+        const rx = sx * cs - sz * sn, rz = sx * sn + sz * cs;
+        pos[i] = rx + (target[i] - rx) * e; pos[i + 1] = sy + (target[i + 1] - sy) * e; pos[i + 2] = rz + (target[i + 2] - rz) * e;
+      }
+    }
+    pGeo.attributes.position.needsUpdate = true;
+    pMat.uniforms.uOpacity.value = 1 - sm(2.7, 3.5, T);
+    lMat.opacity = .55 * (1 - sm(1.0, 2.4, T));
+    points.visible = lines.visible = T < 3.6;
+  }
+  clipLiquid.constant = .05 + (FILL + .1) * sm(.7, 3.0, T);
+
+  // 2. the bottle draws itself around the liquid, bottom to top
+  const g = sm(2.6, 3.7, T), gh = g * 6.0;
+  clipGlass.constant = gh;
+  ring.position.y = Math.min(gh, 5.95); ring.scale.setScalar(rAt(Math.min(gh, 5.95)) + .02);
+  ring.material.opacity = g > 0 && g < 1 ? .9 * Math.sin(g * Math.PI) : 0;
+
+  // 3. the cap spins down onto the neck
+  const cT = Math.min(1, Math.max(0, (T - 3.55) / .8));
+  cap.visible = cT > 0;
+  cap.position.y = CAPY + (1 - outBack(cT)) * 1.4;
+  cap.rotation.y = (1 - cT) * -Math.PI * 3;
+  shadow.material.opacity = .9 * sm(2.6, 3.8, T);
+
+  if (!ready && T > 4.25) {
+    ready = true; document.body.classList.add('ready'); mirror.visible = true;
+  }
+  floorMat.opacity = 1 - .12 * sm(4.2, 5.2, T);
+
+  // 4. at rest: slow sway, pointer parallax, scroll turns it
+  px += (pxT - px) * .05;
+  const sc = Math.min(1.5, scrollY / Math.max(1, hero.offsetHeight));
+  let aim = Math.sin(T * .35) * .32 + px * .5 + sc * Math.PI * 1.2;
+  if (turn) {
+    const k = Math.min(1, (now - turn.t0) / turn.dur);
+    aim += ease(k) * Math.PI * 2;
+    if (!turn.swapped && k > .42) { labelMat.map = mLab.map = turn.tex; labelMat.needsUpdate = mLab.needsUpdate = true; turn.swapped = true; }
+    if (k >= 1) { turn = null; spinBase += Math.PI * 2; }
+  }
+  rotY += ((aim + spinBase) - rotY) * (turn ? .35 : .08);
+  spin.rotation.y = mSpin.rotation.y = rotY;
+  bottle.rotation.x = 0;
+  liqMat.color.lerp(liqTarget, .08); liqMat.emissive.lerp(liqTarget, .08);
+  mLiq.color.copy(liqMat.color); mLiq.emissive.copy(liqMat.emissive);
+  pMat.uniforms.uColor.value.lerp(liqTarget, .1); lMat.color.lerp(liqTarget, .1);
+
+  placeCallouts();
+  if (scrollY < hero.offsetHeight * 1.6) renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+let spinBase = 0;
+
+loadLabel('luxpro').then(t => {
+  labelMat.map = mLab.map = t; labelMat.needsUpdate = mLab.needsUpdate = true;
+  setCopy('luxpro');
+  ORDER.forEach(loadLabel);
+  requestAnimationFrame(frame);
+});
+</script>
+</body>
+</html>

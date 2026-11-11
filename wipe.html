@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>LusterLux — Wipe Prototype</title>
+<link rel="icon" href="assets/img/brand/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Michroma&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="assets/wipe/dirty.webp" />
+<style>
+:root{
+  --bg:#070807; --ink:#f2f1ed; --mut:rgba(242,241,237,.66); --dim:rgba(242,241,237,.4);
+  --line:rgba(242,241,237,.12); --pearl:#ecebe6; --plat:#d9d5ca;
+  --head:"Bodoni Moda",Georgia,serif; --cap:"Michroma",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{font:400 16px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:20;height:72px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,3.4vw,48px);background:linear-gradient(var(--bg),rgba(7,8,7,0))}
+.nav img{height:42px;width:auto}
+.nav ul{display:flex;gap:34px;list-style:none;font:400 9.5px/1 var(--cap);letter-spacing:.26em;text-transform:uppercase;color:var(--mut)}
+.nav ul a:hover{color:var(--ink)}
+.cartbtn{font:400 9.5px/1 var(--cap);letter-spacing:.26em;text-transform:uppercase;border:1px solid var(--line);padding:12px 16px}
+
+/* hero */
+.hero{min-height:100svh;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(28px,4vw,72px);
+  align-items:center;padding:96px clamp(16px,3.4vw,48px) 32px;position:relative}
+.copy{max-width:600px;justify-self:end}
+.kick{display:flex;align-items:center;gap:14px;font:400 9.5px/1 var(--cap);letter-spacing:.34em;text-transform:uppercase;color:var(--plat)}
+.kick i{width:30px;height:1px;background:var(--plat)}
+h1{font:400 clamp(44px,5.6vw,92px)/.98 var(--head);letter-spacing:-.02em;margin-top:26px}
+h1 em{display:block;font-style:italic;background:linear-gradient(180deg,#fff 0%,#d9d5ca 48%,#8f8b80 52%,#efede8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{margin-top:26px;max-width:46ch;color:var(--mut);font-size:clamp(15.5px,1.15vw,17.5px)}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn{display:inline-flex;align-items:center;gap:14px;height:54px;padding:0 26px;font:400 9.5px/1 var(--cap);letter-spacing:.24em;
+  text-transform:uppercase;transition:background .25s,color .25s,border-color .25s}
+.btn.solid{background:var(--pearl);color:#0a0a0a}
+.btn.solid:hover{background:#fff}
+.btn.line{border:1px solid var(--line)}
+.btn.line:hover{border-color:var(--plat)}
+.btn b{font-weight:400;opacity:.55}
+.proof{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;font-size:13px;color:var(--dim)}
+.proof span::before{content:"";display:inline-block;width:4px;height:4px;background:var(--plat);margin:0 10px 2px 0;transform:rotate(45deg)}
+
+/* the panel */
+.panel{position:relative;height:calc(100svh - 128px);max-height:1000px;aspect-ratio:.7;overflow:hidden;background:#111;
+  touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:none}
+.panel img,.panel canvas{position:absolute;inset:0;width:100%;height:100%}
+.panel img{object-fit:cover;object-position:50% 46%}
+#glint{mix-blend-mode:screen;pointer-events:none}
+.panel::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px var(--line)}
+.corner{position:absolute;width:18px;height:18px;border:1px solid var(--plat);pointer-events:none;z-index:3}
+.corner.tl{top:14px;left:14px;border-width:1px 0 0 1px}.corner.tr{top:14px;right:14px;border-width:1px 1px 0 0}
+.corner.bl{bottom:14px;left:14px;border-width:0 0 1px 1px}.corner.br{bottom:14px;right:14px;border-width:0 1px 1px 0}
+
+.hud{position:absolute;left:26px;right:26px;bottom:26px;z-index:4;display:flex;justify-content:space-between;align-items:end;pointer-events:none}
+.read{font:400 8.5px/1 var(--cap);letter-spacing:.3em;text-transform:uppercase;color:var(--mut);
+  background:rgba(7,8,7,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:12px 14px;border:1px solid var(--line)}
+.read strong{display:block;margin-top:9px;font:400 26px/1 var(--head);letter-spacing:0;color:var(--ink);text-transform:none}
+.read strong small{font:400 9px var(--cap);letter-spacing:.2em;color:var(--dim);margin-left:6px}
+.reset{pointer-events:auto;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s var(--ease)}
+.reset.on{opacity:1;transform:none}
+
+.hint{position:absolute;left:50%;top:22%;transform:translate(-50%,0);z-index:4;pointer-events:none;
+  font:400 9px/1 var(--cap);letter-spacing:.32em;text-transform:uppercase;color:var(--ink);
+  background:rgba(7,8,7,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:12px 16px;border:1px solid var(--line);
+  white-space:nowrap;transition:opacity .5s}
+.hint.off{opacity:0}
+
+/* the towel cursor */
+.towel{position:absolute;z-index:5;left:0;top:0;width:var(--tw,74px);height:calc(var(--tw,74px)*.78);pointer-events:none;
+  border-radius:9px 12px 10px 14px;opacity:0;transition:opacity .25s;
+  background:
+    repeating-radial-gradient(circle at 30% 40%,rgba(255,255,255,.07) 0 1px,transparent 1px 3px),
+    linear-gradient(135deg,#55595c,#2f3234 60%,#3d4144);
+  box-shadow:0 10px 26px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.08)}
+.towel::after{content:"";position:absolute;right:8px;bottom:7px;width:16px;height:3px;background:var(--plat);opacity:.7}
+.towel.on{opacity:.94}
+
+.mist{position:absolute;inset:0;z-index:4;pointer-events:none}
+
+.done{position:absolute;left:50%;top:22%;transform:translate(-50%,8px);z-index:4;opacity:0;pointer-events:none;text-align:center;
+  transition:opacity .6s,transform .6s var(--ease)}
+.done.on{opacity:1;transform:translate(-50%,0)}
+.done p{font:italic 400 clamp(26px,2.4vw,36px)/1.1 var(--head);text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.done span{display:block;margin-top:10px;font:400 8.5px/1 var(--cap);letter-spacing:.3em;text-transform:uppercase;color:var(--plat)}
+
+.note{padding:40px clamp(16px,3.4vw,48px) 80px;color:var(--dim);font-size:13px;max-width:900px;margin:0 auto;border-top:1px solid var(--line)}
+
+@media (max-width:900px){
+  .nav ul{display:none}
+  .hero{grid-template-columns:1fr;padding-top:88px;gap:26px}
+  .copy{justify-self:stretch}
+  h1{margin-top:18px}
+  .panel{order:2;height:auto;width:100%;aspect-ratio:.78;max-height:none}
+  .copy .ctas,.copy .proof{display:none}
+  .mob{display:block}
+}
+.mob{display:none}
+@media (max-width:900px){.mob{display:block;order:3}.mob .ctas{margin-top:0}
+  .nav{height:64px}.nav img{height:36px}
+  .hero{padding-top:76px;gap:20px}
+  h1{font-size:clamp(36px,10.4vw,52px);margin-top:14px}
+  .copy .lede{display:none}
+  .mob .lede{display:block;margin:0 0 22px}
+  .hud{left:12px;right:12px;bottom:12px}
+  .read{padding:9px 10px;font-size:7px;letter-spacing:.24em}
+  .read strong{font-size:20px;margin-top:6px}
+  .hint{top:16%;font-size:8px;letter-spacing:.26em;padding:10px 12px}
+  .corner{display:none}
+}
+@media (hover:none){.towel{display:none}.panel{cursor:auto}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html"><img src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" /></a>
+  <ul><li><a href="#">Shop</a></li><li><a href="#">Kits</a></li><li><a href="#">How to use</a></li><li><a href="#">Our story</a></li></ul>
+  <a class="cartbtn" href="https://lusterluxauto.com/cart">Cart</a>
+</nav>
+
+<header class="hero">
+  <div class="copy">
+    <p class="kick"><i></i>Born in the Arizona desert</p>
+    <h1>No hose. No water bill. <em>No HOA letter.</em></h1>
+    <p class="lede">LuxPro is a waterless wash that lifts desert dust off paint, PPF, wraps and ceramic coatings, and leaves protection behind. Go ahead, wipe the car.</p>
+    <div class="ctas">
+      <a class="btn solid" href="https://lusterluxauto.com/cart/59846340902993:1">Shop LuxPro <b>$19.99</b></a>
+      <a class="btn line" href="https://lusterluxauto.com/cart/62697809150033:1">Essentials Kit <b>$39.99</b></a>
+    </div>
+    <p class="proof"><span>5.00 from 20 reviews</span><span>Free shipping $35+</span><span>30-day money back</span></p>
+  </div>
+
+  <div class="panel" id="panel" aria-label="Interactive: drag across the dusty car to wipe it clean with LuxPro">
+    <img src="assets/wipe/clean.webp" alt="A black Lamborghini, freshly wiped, behind a hand holding LuxPro in the LusterLux shop" />
+    <canvas id="dust"></canvas>
+    <canvas id="glint"></canvas>
+    <canvas class="mist" id="mist"></canvas>
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div class="hint" id="hint">Drag across the car to wipe</div>
+    <div class="done" id="done"><p>That's the whole wash.</p><span>One bottle · one towel · zero gallons</span></div>
+    <div class="hud">
+      <div class="read">Water used<strong>0 <small>gal</small></strong></div>
+      <div class="read">Paint cleared<strong id="pct">0<small>%</small></strong></div>
+    </div>
+    <div class="towel" id="towel"></div>
+  </div>
+
+  <div class="mob">
+    <p class="lede">LuxPro is a waterless wash that lifts desert dust off paint, PPF, wraps and ceramic coatings, and leaves protection behind.</p>
+    <div class="ctas">
+      <a class="btn solid" href="https://lusterluxauto.com/cart/59846340902993:1">Shop LuxPro <b>$19.99</b></a>
+      <a class="btn line" href="https://lusterluxauto.com/cart/62697809150033:1">Essentials Kit <b>$39.99</b></a>
+    </div>
+    <p class="proof"><span>5.00 from 20 reviews</span><span>Free shipping $35+</span><span>30-day money back</span></p>
+  </div>
+</header>
+
+<p class="note">Prototype. The car, the hand and the bottle are LusterLux's own photo (IMG_1835). The dust is rendered in code on top of it; nothing in this frame is AI-generated. <button id="again" style="text-decoration:underline">Dust it again</button></p>
+
+<script>
+(() => {
+  const panel = document.getElementById('panel');
+  const out = document.getElementById('dust'), octx = out.getContext('2d');
+  const gl = document.getElementById('glint'), gctx = gl.getContext('2d');
+  const mist = document.getElementById('mist'), mctx = mist.getContext('2d');
+  const towel = document.getElementById('towel'), hint = document.getElementById('hint');
+  const pctEl = document.getElementById('pct'), done = document.getElementById('done');
+  const FX = .5, FY = .46;                       // matches object-position on the clean <img>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mk = () => document.createElement('canvas');
+  const solid = mk(), streak = mk(), buff = mk(), tmp = mk(), carC = mk();
+  const sctx = solid.getContext('2d'), stx = streak.getContext('2d'), bctx = buff.getContext('2d'), tctx = tmp.getContext('2d'), cctx = carC.getContext('2d');
+  const probe = mk(); probe.width = 70; probe.height = 100; const pctx = probe.getContext('2d', { willReadFrequently: true });
+  let dirty, maskA, W = 0, H = 0, dpr = 1, R = 40, cover = null, carSum = 1;
+  let buffing = 0, glintT = -1, finished = false, interacted = false, demo = null, lastP = null, cleared = 0;
+  const parts = [];
+
+  const load = src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; });
+
+  Promise.all([load('assets/wipe/dirty.webp'), load('assets/wipe/mask.webp')]).then(([d, m]) => {
+    dirty = d;
+    // grayscale mask -> alpha mask, once, at source resolution
+    const c = mk(); c.width = m.width; c.height = m.height; const x = c.getContext('2d');
+    x.drawImage(m, 0, 0); const id = x.getImageData(0, 0, c.width, c.height), p = id.data;
+    for (let i = 0; i < p.length; i += 4) { p[i + 3] = p[i]; p[i] = p[i + 1] = p[i + 2] = 255; }
+    x.putImageData(id, 0, 0); maskA = c;
+    size(); new ResizeObserver(size).observe(panel);
+    if (!reduce) setTimeout(() => { if (!interacted) runDemo(); }, 1400);
+    requestAnimationFrame(tick);
+  });
+
+  function size() {
+    const r = panel.getBoundingClientRect();
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    const nw = Math.round(r.width * dpr), nh = Math.round(r.height * dpr);
+    if (nw === W && nh === H) return;
+    // keep strokes across resizes by scaling the old solid layer
+    const keep = W ? (() => { const k = mk(); k.width = W; k.height = H; k.getContext('2d').drawImage(solid, 0, 0); return k; })() : null;
+    W = nw; H = nh;
+    for (const c of [out, gl, mist, solid, streak, buff, tmp, carC]) { c.width = W; c.height = H; }
+    const s = Math.max(W / dirty.width, H / dirty.height);
+    const dw = dirty.width * s, dh = dirty.height * s;
+    cover = [(W - dw) * FX, (H - dh) * FY, dw, dh];
+    cctx.drawImage(maskA, ...cover);
+    R = Math.max(26, Math.min(W, H) * .085);
+    towel.style.setProperty('--tw', (R * 2.1 / dpr) + 'px');
+    if (keep) { for (const x of [sctx, stx, bctx]) x.drawImage(keep, 0, 0, W, H); }
+    pctx.clearRect(0, 0, 70, 100); pctx.drawImage(carC, 0, 0, 70, 100);
+    const d = pctx.getImageData(0, 0, 70, 100).data; carSum = 0; for (let i = 3; i < d.length; i += 4) carSum += d[i];
+    draw();
+  }
+
+  // one towel pass from a to b
+  function stroke(a, b) {
+    const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
+    // feathered towel edge: a solid core and two soft rings, plus a small wobble
+    const j = (Math.random() - .5) * R * .12;
+    sctx.lineCap = 'round'; sctx.lineJoin = 'round';
+    for (const [w, al] of [[2.5, .10], [2.22, .22], [1.92, 1]]) {
+      sctx.strokeStyle = `rgba(255,255,255,${al})`; sctx.lineWidth = R * w;
+      sctx.beginPath(); sctx.moveTo(a.x + nx * j, a.y + ny * j); sctx.lineTo(b.x + nx * j, b.y + ny * j); sctx.stroke();
+    }
+    // first pass is streaky: a soft core plus fibre lines running with the stroke
+    stx.lineCap = 'round'; stx.strokeStyle = 'rgba(255,255,255,.55)'; stx.lineWidth = R * 1.7;
+    stx.beginPath(); stx.moveTo(a.x, a.y); stx.lineTo(b.x, b.y); stx.stroke();
+    for (let k = 0; k < 9; k++) {
+      const o = (k / 8 - .5) * R * 1.9, w = R * (.05 + Math.random() * .16);
+      stx.strokeStyle = `rgba(255,255,255,${.35 + Math.random() * .5})`; stx.lineWidth = w;
+      stx.beginPath(); stx.moveTo(a.x + nx * o, a.y + ny * o); stx.lineTo(b.x + nx * o, b.y + ny * o); stx.stroke();
+    }
+    buffing = 110;
+  }
+
+  function draw() {
+    if (!W) return;
+    octx.globalCompositeOperation = 'source-over'; octx.clearRect(0, 0, W, H);
+    octx.drawImage(dirty, ...cover);
+    tctx.globalCompositeOperation = 'source-over'; tctx.clearRect(0, 0, W, H);
+    tctx.drawImage(streak, 0, 0); tctx.drawImage(buff, 0, 0);
+    tctx.globalCompositeOperation = 'destination-in'; tctx.drawImage(carC, 0, 0);
+    octx.globalCompositeOperation = 'destination-out'; octx.drawImage(tmp, 0, 0);
+    // glint: one specular sweep across what has been cleaned
+    gctx.globalCompositeOperation = 'source-over'; gctx.clearRect(0, 0, W, H);
+    if (glintT >= 0) {
+      const x = -W * .4 + glintT * W * 1.8, g = gctx.createLinearGradient(x - W * .25, 0, x + W * .25, H * .35);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,250,240,.30)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      gctx.fillStyle = g; gctx.fillRect(0, 0, W, H);
+      gctx.globalCompositeOperation = 'destination-in'; gctx.drawImage(buff, 0, 0);
+      gctx.drawImage(carC, 0, 0);
+    }
+  }
+
+  function measure() {
+    pctx.globalCompositeOperation = 'source-over'; pctx.clearRect(0, 0, 70, 100);
+    pctx.drawImage(solid, 0, 0, 70, 100);
+    pctx.globalCompositeOperation = 'destination-in'; pctx.drawImage(carC, 0, 0, 70, 100);
+    const d = pctx.getImageData(0, 0, 70, 100).data; let s = 0; for (let i = 3; i < d.length; i += 4) s += d[i];
+    cleared = Math.min(1, s / carSum);
+    pctEl.innerHTML = Math.round(cleared * 100) + '<small>%</small>';
+    if (cleared > .74 && !finished && !demo) finish();
+  }
+
+  function finish() {
+    finished = true;
+    const t0 = performance.now();
+    (function sweep(t) {
+      const k = Math.min(1, (t - t0) / 1300), e = 1 - Math.pow(1 - k, 3);
+      sctx.fillStyle = '#fff'; sctx.fillRect(0, 0, W, H * e);
+      bctx.globalAlpha = 1; bctx.fillStyle = '#fff'; bctx.fillRect(0, 0, W, H * e);
+      buffing = 60; measure();
+      if (k < 1) requestAnimationFrame(sweep); else { glintT = 0; done.classList.add('on'); document.querySelector('.reset')?.classList.add('on'); }
+    })(t0);
+  }
+
+  function puff(x, y) {
+    for (let i = 0; i < 46; i++) {
+      const a = Math.random() * Math.PI * 2, v = (.4 + Math.random() * 2.4) * dpr;
+      parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - .4 * dpr, r: (1 + Math.random() * 2.6) * dpr, life: 1 });
+    }
+  }
+
+  let frame = 0;
+  function tick() {
+    let changed = false;
+    if (buffing > 0) {
+      // the streaky first pass buffs out to full gloss over ~1.5s
+      bctx.globalAlpha = .045; bctx.drawImage(solid, 0, 0); bctx.globalAlpha = 1;
+      buffing--; changed = true;
+      if (buffing === 0 && glintT < 0) glintT = 0;
+    }
+    if (glintT >= 0) { glintT += .016; if (glintT > 1) glintT = -1; changed = true; }
+    if (demo) { demo(); changed = true; }
+    if (changed) draw();
+    if (++frame % 12 === 0 && (buffing || demo)) measure();
+    // mist
+    mctx.clearRect(0, 0, W, H);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.x += p.vx; p.y += p.vy; p.vx *= .96; p.vy *= .96; p.life -= .02;
+      if (p.life <= 0) { parts.splice(i, 1); continue; }
+      mctx.fillStyle = `rgba(255,232,246,${p.life * .45})`; mctx.beginPath(); mctx.arc(p.x, p.y, p.r, 0, 7); mctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // pointer
+  const pos = e => { const r = panel.getBoundingClientRect(); return { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr, cx: e.clientX - r.left, cy: e.clientY - r.top }; };
+  const moveTowel = p => { towel.style.transform = `translate(${p.cx - towel.offsetWidth / 2}px,${p.cy - towel.offsetHeight / 2}px) rotate(-8deg)`; };
+  let down = false;
+  panel.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') towel.classList.add('on'); });
+  panel.addEventListener('pointerleave', () => { towel.classList.remove('on'); down = false; lastP = null; });
+  panel.addEventListener('pointerdown', e => {
+    stopDemo(); interacted = true; hint.classList.add('off');
+    down = true; const p = pos(e); lastP = p; puff(p.x, p.y); stroke(p, { x: p.x + .1, y: p.y }); moveTowel(p);
+  });
+  panel.addEventListener('pointermove', e => {
+    const p = pos(e); moveTowel(p);
+    // mouse users wipe on hover too, so it works without knowing to click
+    const wiping = down || (e.pointerType === 'mouse' && interacted);
+    if (e.pointerType === 'mouse' && !interacted && lastP) { const d = Math.hypot(p.x - lastP.x, p.y - lastP.y); if (d > 8) { stopDemo(); interacted = true; hint.classList.add('off'); } }
+    if (wiping && lastP && !finished) stroke(lastP, p);
+    lastP = p;
+  });
+  addEventListener('pointerup', () => { down = false; });
+  panel.addEventListener('pointercancel', () => { down = false; lastP = null; });
+
+  // ghost demo: the towel does two passes across the hood by itself
+  function runDemo() {
+    if (!W) return;
+    towel.classList.add('on');
+    const pts = [[.16, .47], [.84, .44]].map(([x, y]) => ({ x: x * W, y: y * H }));
+    let t = 0, prev = null; puff(pts[0].x, pts[0].y);
+    demo = () => {
+      t += .009; const k = Math.min(t, 1) * (pts.length - 1), i = Math.min(pts.length - 2, Math.floor(k)), f = k - i;
+      const e = f < .5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+      const p = { x: pts[i].x + (pts[i + 1].x - pts[i].x) * e, y: pts[i].y + (pts[i + 1].y - pts[i].y) * e };
+      if (prev) stroke(prev, p); prev = p;
+      moveTowel({ cx: p.x / dpr, cy: p.y / dpr });
+      if (t >= 1) { stopDemo(); hint.textContent = 'Your turn. Drag across the car'; }
+    };
+  }
+  function stopDemo() { if (!demo) return; demo = null; if (!panel.matches(':hover')) towel.classList.remove('on'); }
+
+  document.getElementById('again').addEventListener('click', () => {
+    for (const x of [sctx, stx, bctx]) x.clearRect(0, 0, W, H);
+    finished = false; glintT = -1; done.classList.remove('on'); hint.classList.remove('off'); hint.textContent = 'Drag across the car to wipe';
+    measure(); draw();
+  });
+})();
+</script>
+</body>
+</html>
