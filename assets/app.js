@@ -107,30 +107,6 @@
   };
 
 
-  /* ================= HERO: the line as a rail of their real product photos, one formula up at a time ================= */
-  const HR = ['luxpro', 'luxfoam', 'luxquick', 'ceramicx', 'wheelassassin', 'tirevenom', 'interiorx', 'restorx'].map(prod);
-  const hrB = $('#hrBottles'), hrInfo = $('#hrInfo'), hrBar = $('#hrBar'), hrail = $('#hrail');
-  hrB.innerHTML = HR.map((p, i) => `<button type="button" role="tab" data-i="${i}" style="--c:${p.c}" aria-label="${p.a}${p.b}"><img src="assets/img/bottles/${p.k}-sm.webp" alt="" /></button>`).join('');
-  let hrI = -1, hrT = null, hrHold = false;
-  const HRD = 3400;
-  const hrShow = i => {
-    hrI = (i + HR.length) % HR.length; const p = HR[hrI], c = COPY[p.k] || {};
-    $$('button', hrB).forEach((b, j) => b.setAttribute('aria-selected', j === hrI));
-    hrail.style.setProperty('--c', p.c);
-    hrInfo.classList.remove('in'); void hrInfo.offsetWidth;
-    hrInfo.innerHTML = `<span class="hr-n">${String(hrI + 1).padStart(2, '0')} / ${String(HR.length).padStart(2, '0')}</span>
-      <b class="hr-name">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></b>
-      <span class="hr-tag">${c.tag || p.fn}</span>
-      <span class="hr-price">${money(p.price)}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a>`;
-    hrInfo.classList.add('in');
-    hrBar.style.animation = 'none'; void hrBar.offsetWidth; hrBar.style.animation = `hcbar ${HRD / 1000}s linear forwards`;
-    clearTimeout(hrT); if (!hrHold) hrT = setTimeout(() => hrShow(hrI + 1), HRD);
-  };
-  hrB.addEventListener('click', e => { const b = e.target.closest('button'); if (b) hrShow(+b.dataset.i); });
-  hrail.addEventListener('mouseenter', () => { hrHold = true; clearTimeout(hrT); hrail.classList.add('held'); });
-  hrail.addEventListener('mouseleave', () => { hrHold = false; hrail.classList.remove('held'); hrShow(hrI + 1); });
-  hrShow(0);
-
   /* ================= THE LINE: pinned theater ================= */
   const TH = P.filter(p => p.g !== 'golf');
   const th = $('#theater'), thInfo = $('#thInfo'), thRail = $('#thRail');
