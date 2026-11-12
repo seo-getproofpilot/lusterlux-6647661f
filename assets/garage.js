@@ -93,7 +93,7 @@
       gl.uniform2f(u.mouse, mx, my);
       // the bottle sits ~ (0.5, 0.55) in the photo; on desktop it lands left of the copy, on phones in the middle
       gl.uniform2f(u.focus, .5, .53);
-      gl.uniform2f(u.aim, mob ? .5 : .47, .5);
+      gl.uniform2f(u.aim, mob ? .5 : innerWidth < 1250 ? .41 : .47, .5);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       if (!hero.classList.contains('lit')) hero.classList.add('lit');
       if (T > 1.5 && !hero.classList.contains('arrived')) hero.classList.add('arrived');

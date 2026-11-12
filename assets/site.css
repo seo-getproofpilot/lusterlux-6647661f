@@ -757,3 +757,7 @@ section.real{background:linear-gradient(180deg,#F1F8E4,#fff)}
   .hg h1{font-size:clamp(38px,11vw,54px)}
   .hg .hf-badge{width:80px}
 }
+
+@media (max-width:1240px){.nav ul{gap:22px;font-size:10.5px}}
+@media (max-width:1060px) and (min-width:901px){.nav ul{display:none}}
+.hg-copy{width:min(480px,max(34vw,420px))}
