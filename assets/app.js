@@ -107,60 +107,55 @@
   };
 
 
-  /* ================= HERO: Shine Supply-style carousel of their own photos ================= */
-  // every slide passes the brief: the owners, a car, or the product being used on one (no bottle-only shots)
-  const SL = [
-    ['chase', 'LuxPro', 'Chase, co-founder', 'luxpro'],
-    ['luxpro-mclaren', 'LuxPro', 'Skip the hose. Keep the shine.', 'luxpro'],
-    ['founders', 'Chase & Brandon', 'Two friends from 7th grade', '#story'],
-    ['foam-driveway', 'LuxFoam', 'Foam cannon wash', 'luxfoam'],
-    ['tirevenom-hand', 'TireVenom', 'No-sling tire dressing', 'tirevenom'],
-    ['wipe', 'In the shop', 'Every bottle gets tested here', '#real'],
-    ['luxpro-mural', 'LuxPro', 'Built through sacrifice', 'luxpro'],
-    ['dry', 'The final dry', 'Edgeless Lux microfiber', '#kits'],
-    ['interiorx-door', 'InteriorX', 'Door panels to dashboards', 'interiorx'],
-    ['luxpro-front', 'LuxPro', 'Safe on paint, PPF & ceramic', 'luxpro'],
-    ['foam', 'LuxFoam', 'Thick foam. Every wash.', 'luxfoam'],
-    ['tirevenom', 'TireVenom', 'Deep, rich tires', 'tirevenom'],
-    ['wash', 'LuxFoam', 'A slick, safe contact wash', 'luxfoam'],
-    ['interiorx', 'InteriorX', 'A cleaner interior starts here', 'interiorx'],
-    ['towels', 'Edgeless Lux towels', 'Soft, streak-free finish', '#kits'],
+  /* ================= HERO: full-width slideshow (Shine Supply pattern), their photos and their taglines ================= */
+  // each slide passes the brief: the owners, a car, or the product being used on one
+  const SS = [
+    { img: 'luxpro-mclaren', side: 'r', kick: 'Waterless wash', h: 'Skip the hose. Keep the showroom shine.', cta: 'Shop LuxPro', k: 'luxpro' },
+    { img: 'foam-driveway', side: 'l', kick: 'Foam wash', h: 'Thick foam. Brilliant shine. Every wash.', cta: 'Shop LuxFoam', k: 'luxfoam' },
+    { img: 'founders', side: 'r', kick: 'Chase & Brandon', h: 'Two friends from 7th grade. One line of formulas.', cta: 'Our story', href: '#story' },
+    { img: 'tirevenom-hand', side: 'r', kick: 'Tire dressing', h: 'Deep, rich tires. Long-lasting protection.', cta: 'Shop TireVenom', k: 'tirevenom' },
+    { img: 'luxpro-mural', side: 'r', kick: 'Built in Arizona', h: 'Built through sacrifice.', cta: 'Shop the line', href: '#theater' },
+    { img: 'dry', side: 'r', kick: 'The final dry', h: 'Soft, streak-free, every panel.', cta: 'Shop kits', href: '#kits' },
   ];
-
-  const hsTrack = $('#hsTrack'), hsStrip = $('#hsStrip'), hsDots = $('#hsDots');
-  if (hsTrack) {
-    const card = ([img, t, s, link]) => {
-      const p = link[0] === '#' ? null : prod(link);
-      const href = p ? cartURL(p.v) : link;
-      return `<figure class="hs-card"><img src="assets/hero/slides/${img}.webp" alt="${t}: ${s}" loading="lazy" />
-        <figcaption><span><b>${t}</b>${s}</span><a href="${href}">${p ? 'Shop ' + money(p.price) : 'See more'} <i>→</i></a></figcaption></figure>`;
+  const ssBox = $('#ssSlides'), ssDots = $('#ssDots');
+  if (ssBox) {
+    ssBox.innerHTML = SS.map((s, i) => `
+      <section class="ss-slide side-${s.side}" aria-roledescription="slide" aria-label="${i + 1} of ${SS.length}">
+        <picture><source media="(max-width: 900px)" srcset="assets/hero/slides/${s.img}.webp" />
+          <img src="assets/hero/wide/${s.img}.webp" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} /></picture>
+        <div class="ss-copy"><p class="ss-kick">${s.kick}</p><h${i ? 2 : 1} class="ss-h">${s.h}</h${i ? 2 : 1}>
+          <a class="btn solid" href="${s.k ? cartURL(prod(s.k).v) : s.href}">${s.cta}</a></div>
+      </section>`).join('');
+    ssDots.innerHTML = SS.map((_, i) => `<button type="button" role="tab" aria-label="Slide ${i + 1}" aria-selected="${!i}"><i></i></button>`).join('');
+    const slides = $$('.ss-slide', ssBox), dots = $$('button', ssDots), wipe = $('#ssWipe');
+    let cur = 0, t = null, held = false, busy = false;
+    const DUR = 5600;
+    ssBox.parentElement.style.setProperty('--dur', DUR + 'ms');
+    // the squeegee: the next photo is wiped on under a glossy streak; the old one stays underneath until it's covered
+    const show = (i, first) => {
+      const next = (i + SS.length) % SS.length;
+      if (!first && (next === cur || busy)) { clearTimeout(t); if (!held) t = setTimeout(() => show(cur + 1), DUR); return; }
+      const prev = slides[cur];
+      cur = next;
+      slides.forEach(s => s.classList.remove('top'));
+      if (!first) {
+        busy = true;
+        prev.classList.add('under');
+        slides[cur].classList.add('on', 'top', 'wiping');
+        wipe.classList.remove('go'); void wipe.offsetWidth; wipe.classList.add('go');
+        setTimeout(() => { prev.classList.remove('on', 'under'); slides[cur].classList.remove('wiping'); busy = false; }, 1050);
+      } else slides[cur].classList.add('on', 'top');
+      dots.forEach((d, j) => { d.setAttribute('aria-selected', j === cur); const bar = d.querySelector('i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; });
+      clearTimeout(t); if (!held) t = setTimeout(() => show(cur + 1), DUR);
     };
-    hsTrack.innerHTML = SL.map(card).join('') + SL.map(card).join('');   // doubled so it can loop forever
-    $$('img', hsTrack).slice(0, 4).forEach(i => i.loading = 'eager');
-    hsDots.innerHTML = SL.map((_, i) => `<i data-i="${i}"></i>`).join('');
-    let at = 0, timer = null, hold = false;
-    const step = () => { const c = hsTrack.children[0]; return c.getBoundingClientRect().width + parseFloat(getComputedStyle(hsTrack).gap || 0); };
-    const show = (i, jump) => {
-      at = i;
-      hsTrack.style.transition = jump ? 'none' : '';
-      hsTrack.style.transform = `translate3d(${-at * step()}px,0,0)`;
-      $$('i', hsDots).forEach((d, j) => d.classList.toggle('on', j === ((at % SL.length) + SL.length) % SL.length));
-      $$('.hs-card', hsTrack).forEach((c, j) => c.classList.toggle('lead', j === at));
-    };
-    hsTrack.addEventListener('transitionend', () => { if (at >= SL.length) show(at - SL.length, true); if (at < 0) show(at + SL.length, true); });
-    const go = d => { if (at + d < 0) { show(at + SL.length, true); void hsTrack.offsetWidth; } show(at + d); schedule(); };
-    const schedule = () => { clearTimeout(timer); if (!hold) timer = setTimeout(() => go(1), 3600); };
-    $('#hsNext').addEventListener('click', () => go(1));
-    $('#hsPrev').addEventListener('click', () => go(-1));
-    hsDots.addEventListener('click', e => { const d = e.target.closest('i'); if (d) { show(+d.dataset.i); schedule(); } });
-    hsStrip.addEventListener('mouseenter', () => { hold = true; clearTimeout(timer); });
-    hsStrip.addEventListener('mouseleave', () => { hold = false; schedule(); });
-    // swipe on touch
+    dots.forEach((d, j) => d.addEventListener('click', () => show(j)));
+    const hero = $('.ss');
+    hero.addEventListener('mouseenter', () => { held = true; clearTimeout(t); hero.classList.add('held'); });
+    hero.addEventListener('mouseleave', () => { held = false; hero.classList.remove('held'); clearTimeout(t); t = setTimeout(() => show(cur + 1), DUR); });
     let sx = null;
-    hsStrip.addEventListener('touchstart', e => { sx = e.touches[0].clientX; hold = true; clearTimeout(timer); }, { passive: true });
-    hsStrip.addEventListener('touchend', e => { if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); } sx = null; hold = false; schedule(); });
-    addEventListener('resize', () => show(at, true));
-    show(0, true); schedule();
+    hero.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    hero.addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1)); sx = null; });
+    show(0, true);
   }
 
   /* ================= THE LINE: pinned theater ================= */

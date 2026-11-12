@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/site.css?v=13" />
+<link rel="stylesheet" href="assets/site.css?v=16" />
 <script>document.documentElement.classList.add('js')</script>
 <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
 </head>
@@ -30,24 +30,21 @@
   <a class="cart" href="https://lusterluxauto.com/cart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h2l1.6 8.2a1 1 0 0 0 1 .8h7.6a1 1 0 0 0 1-.8L17.5 7H6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="16" r="1.2"/><circle cx="14.5" cy="16" r="1.2"/></svg>Cart</a>
 </nav>
 
-<!-- HERO: a carousel of LusterLux's own photos (their product shots, the guys, the product in use), big logo top left. -->
-<header class="hero hs" id="top">
-  <div class="hs-brand">
-    <img class="hs-logo" src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="220" height="220" />
-    <p class="kick">Detailing products · Arizona</p>
-    <h1>Showroom shine, <em>bottled.</em></h1>
-    <p class="lede">Detailing products made by two Arizona detailers. Foam to tire shine, one line.</p>
-    <div class="ctas">
-      <a class="btn solid" href="#theater">Shop the line</a>
-      <a class="btn chrome" href="#finder">Build my kit</a>
-    </div>
-    <div class="hs-ctrl">
-      <button type="button" id="hsPrev" aria-label="Previous photo">‹</button>
-      <button type="button" id="hsNext" aria-label="Next photo">›</button>
-      <span class="hs-dots" id="hsDots"></span>
-    </div>
-  </div>
-  <div class="hs-strip" id="hsStrip"><div class="hs-track" id="hsTrack"></div></div>
+<!-- HERO: full-width slideshow like Shine Supply. One of LusterLux's own photos per slide (owners, cars, product in use),
+     their own tagline, one button. Big LusterLux badge top left. -->
+<header class="hero ss" id="top">
+  <div class="ss-slides" id="ssSlides"></div>
+  <img class="ss-logo" src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="190" height="190" />
+  <div class="ss-wipe" id="ssWipe" aria-hidden="true"></div>
+  <div class="ss-dots" id="ssDots" role="tablist" aria-label="Slides"></div>
+  <ul class="ss-facts" aria-label="LusterLux facts">
+    <li><b>18</b><span>The age Chase &amp; Brandon started LusterLux</span></li>
+    <li><b>4 yrs</b><span>Washing a rental fleet daily before the first bottle</span></li>
+    <li><b>5.00<em>★</em></b><span>From 20 customer reviews</span></li>
+    <li><b>8 mo</b><span>Up to 8 months of protection per CeramicX coat</span></li>
+    <li><b>30–50</b><span>Tires dressed per bottle of TireVenom</span></li>
+    <li><b>USA</b><span>Made here. Ships free over $35</span></li>
+  </ul>
 </header>
 
 <!-- THE LINE: pinned scroll. Each formula takes the stage; the room takes on its liquid colour. -->
@@ -150,7 +147,7 @@
   <p class="note">A ProofPilot concept for LusterLux. Products, prices, reviews, photos and videos are LusterLux's. The 3D bottles are built from their studio photos and labels; the hero car is their own photo, set in a drawn studio.</p>
 </footer>
 
-<script src="assets/app.js?v=10" defer></script>
+<script src="assets/app.js?v=13" defer></script>
 <script type="module" src="assets/theater3d.js?v=2"></script>
 </body>
 </html>
