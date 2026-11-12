@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/site.css?v=11" />
+<link rel="stylesheet" href="assets/site.css?v=13" />
 <script>document.documentElement.classList.add('js')</script>
 <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
 </head>
@@ -30,22 +30,24 @@
   <a class="cart" href="https://lusterluxauto.com/cart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h2l1.6 8.2a1 1 0 0 0 1 .8h7.6a1 1 0 0 0 1-.8L17.5 7H6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="16" r="1.2"/><circle cx="14.5" cy="16" r="1.2"/></svg>Cart</a>
 </nav>
 
-<!-- HERO: garage walk-in. Their own photo + a depth map, so the camera dollies into the shop toward LuxPro. -->
-<header class="hero hg" id="top">
-  <img class="hg-fallback" src="assets/hero/garage.webp" alt="" aria-hidden="true" />
-  <canvas id="hgl" aria-label="Moving into the LusterLux garage toward a bottle of LuxPro standing on a glossy car, in front of the Built Through Sacrifice mural"></canvas>
-  <div class="hg-shade" aria-hidden="true"></div>
-  <div class="hg-copy">
-    <img class="hf-badge" src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="120" height="120" />
+<!-- HERO: a carousel of LusterLux's own photos (their product shots, the guys, the product in use), big logo top left. -->
+<header class="hero hs" id="top">
+  <div class="hs-brand">
+    <img class="hs-logo" src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="220" height="220" />
     <p class="kick">Detailing products · Arizona</p>
-    <h1>Built through <em>sacrifice.</em></h1>
-    <p class="lede">Chase and Brandon started LusterLux at 18, after four years of washing a rental fleet every day in the Arizona sun. Eight formulas came out of that work.</p>
+    <h1>Showroom shine, <em>bottled.</em></h1>
+    <p class="lede">Detailing products made by two Arizona detailers. Foam to tire shine, one line.</p>
     <div class="ctas">
       <a class="btn solid" href="#theater">Shop the line</a>
       <a class="btn chrome" href="#finder">Build my kit</a>
     </div>
-    <a class="hg-founders" href="#story"><img src="assets/hero/founders-duo.webp" alt="" /><span><b>Chase &amp; Brandon</b>The founders, in the shop where every bottle gets tested</span><i aria-hidden="true">→</i></a>
+    <div class="hs-ctrl">
+      <button type="button" id="hsPrev" aria-label="Previous photo">‹</button>
+      <button type="button" id="hsNext" aria-label="Next photo">›</button>
+      <span class="hs-dots" id="hsDots"></span>
+    </div>
   </div>
+  <div class="hs-strip" id="hsStrip"><div class="hs-track" id="hsTrack"></div></div>
 </header>
 
 <!-- THE LINE: pinned scroll. Each formula takes the stage; the room takes on its liquid colour. -->
@@ -148,8 +150,7 @@
   <p class="note">A ProofPilot concept for LusterLux. Products, prices, reviews, photos and videos are LusterLux's. The 3D bottles are built from their studio photos and labels; the hero car is their own photo, set in a drawn studio.</p>
 </footer>
 
-<script src="assets/app.js?v=9" defer></script>
-<script src="assets/garage.js?v=2" defer></script>
+<script src="assets/app.js?v=10" defer></script>
 <script type="module" src="assets/theater3d.js?v=2"></script>
 </body>
 </html>

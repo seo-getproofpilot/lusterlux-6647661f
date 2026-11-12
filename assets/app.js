@@ -107,6 +107,62 @@
   };
 
 
+  /* ================= HERO: Shine Supply-style carousel of their own photos ================= */
+  // every slide passes the brief: the owners, a car, or the product being used on one (no bottle-only shots)
+  const SL = [
+    ['chase', 'LuxPro', 'Chase, co-founder', 'luxpro'],
+    ['luxpro-mclaren', 'LuxPro', 'Skip the hose. Keep the shine.', 'luxpro'],
+    ['founders', 'Chase & Brandon', 'Two friends from 7th grade', '#story'],
+    ['foam-driveway', 'LuxFoam', 'Foam cannon wash', 'luxfoam'],
+    ['tirevenom-hand', 'TireVenom', 'No-sling tire dressing', 'tirevenom'],
+    ['wipe', 'In the shop', 'Every bottle gets tested here', '#real'],
+    ['luxpro-mural', 'LuxPro', 'Built through sacrifice', 'luxpro'],
+    ['dry', 'The final dry', 'Edgeless Lux microfiber', '#kits'],
+    ['interiorx-door', 'InteriorX', 'Door panels to dashboards', 'interiorx'],
+    ['luxpro-front', 'LuxPro', 'Safe on paint, PPF & ceramic', 'luxpro'],
+    ['foam', 'LuxFoam', 'Thick foam. Every wash.', 'luxfoam'],
+    ['tirevenom', 'TireVenom', 'Deep, rich tires', 'tirevenom'],
+    ['wash', 'LuxFoam', 'A slick, safe contact wash', 'luxfoam'],
+    ['interiorx', 'InteriorX', 'A cleaner interior starts here', 'interiorx'],
+    ['towels', 'Edgeless Lux towels', 'Soft, streak-free finish', '#kits'],
+  ];
+
+  const hsTrack = $('#hsTrack'), hsStrip = $('#hsStrip'), hsDots = $('#hsDots');
+  if (hsTrack) {
+    const card = ([img, t, s, link]) => {
+      const p = link[0] === '#' ? null : prod(link);
+      const href = p ? cartURL(p.v) : link;
+      return `<figure class="hs-card"><img src="assets/hero/slides/${img}.webp" alt="${t}: ${s}" loading="lazy" />
+        <figcaption><span><b>${t}</b>${s}</span><a href="${href}">${p ? 'Shop ' + money(p.price) : 'See more'} <i>→</i></a></figcaption></figure>`;
+    };
+    hsTrack.innerHTML = SL.map(card).join('') + SL.map(card).join('');   // doubled so it can loop forever
+    $$('img', hsTrack).slice(0, 4).forEach(i => i.loading = 'eager');
+    hsDots.innerHTML = SL.map((_, i) => `<i data-i="${i}"></i>`).join('');
+    let at = 0, timer = null, hold = false;
+    const step = () => { const c = hsTrack.children[0]; return c.getBoundingClientRect().width + parseFloat(getComputedStyle(hsTrack).gap || 0); };
+    const show = (i, jump) => {
+      at = i;
+      hsTrack.style.transition = jump ? 'none' : '';
+      hsTrack.style.transform = `translate3d(${-at * step()}px,0,0)`;
+      $$('i', hsDots).forEach((d, j) => d.classList.toggle('on', j === ((at % SL.length) + SL.length) % SL.length));
+      $$('.hs-card', hsTrack).forEach((c, j) => c.classList.toggle('lead', j === at));
+    };
+    hsTrack.addEventListener('transitionend', () => { if (at >= SL.length) show(at - SL.length, true); if (at < 0) show(at + SL.length, true); });
+    const go = d => { if (at + d < 0) { show(at + SL.length, true); void hsTrack.offsetWidth; } show(at + d); schedule(); };
+    const schedule = () => { clearTimeout(timer); if (!hold) timer = setTimeout(() => go(1), 3600); };
+    $('#hsNext').addEventListener('click', () => go(1));
+    $('#hsPrev').addEventListener('click', () => go(-1));
+    hsDots.addEventListener('click', e => { const d = e.target.closest('i'); if (d) { show(+d.dataset.i); schedule(); } });
+    hsStrip.addEventListener('mouseenter', () => { hold = true; clearTimeout(timer); });
+    hsStrip.addEventListener('mouseleave', () => { hold = false; schedule(); });
+    // swipe on touch
+    let sx = null;
+    hsStrip.addEventListener('touchstart', e => { sx = e.touches[0].clientX; hold = true; clearTimeout(timer); }, { passive: true });
+    hsStrip.addEventListener('touchend', e => { if (sx !== null) { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); } sx = null; hold = false; schedule(); });
+    addEventListener('resize', () => show(at, true));
+    show(0, true); schedule();
+  }
+
   /* ================= THE LINE: pinned theater ================= */
   const TH = P.filter(p => p.g !== 'golf');
   const th = $('#theater'), thInfo = $('#thInfo'), thRail = $('#thRail');
