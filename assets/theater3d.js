@@ -43,7 +43,7 @@ const room = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMater
       vec2 nuv = vec2((s.x - uFocus.x) * (uRes.x / uRes.y) * .58 + .5, (s.y - uFocus.y - (uMob > .5 ? .02 : .2)) * 1.05 + .5);
       vec4 na = texture2D(uNameA, nuv), nb = texture2D(uNameB, nuv);
       float n = mix(nb.a, na.a, uMix);
-      c = mix(c, vec3(1.0), n * .92 * sat);
+      c = mix(c, vec3(1.0), n * 0.0 * sat);
       // floor: a lit line and a darker floor under the bottle
       float fy = uMob > .5 ? .56 : .17;
       c *= 1.0 - .18 * smoothstep(fy + .02, fy - .06, s.y) * sat;
@@ -120,15 +120,18 @@ layout(); addEventListener('resize', layout);
 /* ---------- swapping formulas ---------- */
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const outBack = t => { const c1 = 1.3, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
-let pendingBurst = null, curK = null, outK = null, tSwap = -9, dir = 1, clock = 0, tScroll = .5, tSm = .5, pLast = 0, vel = 0;
+let pendingBurst = null, curK = null, tSwap = -9, clock = 0, tScroll = .5, tSm = .5, pLast = 0, vel = 0;
+// every bottle on stage tracks its own move, so fast scrolling can never leave one stuck or stacked on another
+const live = new Map();          // k -> { mode: 'in' | 'out', t0, dir }
 function show(k, d = 1) {
   if (k === curK || !B[k]) return;
-  const first = !curK; outK = curK; curK = k; dir = d; tSwap = clock;
+  const first = !curK; curK = k; tSwap = clock;
+  for (const [kk, m] of live) if (kk !== k && m.mode === 'in') { m.mode = 'out'; m.t0 = clock; m.dir = d; }
+  live.set(k, { mode: 'in', t0: clock, dir: d });
   const info = KEYS.find(x => x.k === k);
   U.uB.value.copy(U.uA.value); U.uA.value.set(info.c); if (first) U.uB.value.set(info.c); U.uMix.value = 0;
-  drawName(info.name, info.fn);
-  const b = B[k]; b.g.visible = true; b.label.material.userData.uT.value = 0; b.spin.rotation.y = -1.4 * d;
-  pendingBurst = { c: info.c, at: clock + .32 };
+  const b = B[k]; b.g.visible = false; b.g.position.set(9 * d, 0, 0); b.label.material.userData.uT.value = 3; b.spin.rotation.y = -1.4 * d;
+  pendingBurst = { c: info.c, at: clock + .9 };
 }
 addEventListener('lux:theater', e => show(e.detail.k, e.detail.dir));
 window.__theater = { progress(p, t) { vel += Math.abs(p - pLast) * 60; pLast = p; tScroll = t; } };
@@ -141,19 +144,22 @@ function frame(now) {
   U.uMix.value = Math.min(1, s / .7); U.uTime.value = clock;
   vel *= Math.exp(-dt * 3); U.uDrift.value += dt * (.15 + vel * .4);
   tSm += (tScroll - tSm) * (1 - Math.exp(-dt * 6));
-  // incoming: drops in with a bounce while its label assembles; outgoing: lifts away and tilts
-  if (curK) {
-    const b = B[curK], k = Math.min(1, s / .9);
-    b.g.position.set(0, (1 - outBack(k)) * 7 * dir, 0); b.g.rotation.z = (1 - ease(k)) * .25 * dir;
-    b.label.material.userData.uT.value = Math.min(3, .7 + Math.max(0, s - .08) / .8 * 2.3);
-    const turn = (tSm - .5) * 1.5 + Math.sin(clock * .5) * .15;
-    b.spin.rotation.y += ((turn) - b.spin.rotation.y) * (1 - Math.exp(-dt * 5));
-    b.sh.material.opacity = .9 * k;
-  }
-  if (outK && outK !== curK) {
-    const b = B[outK], k = Math.min(1, s / .6);
-    b.g.position.set(0, -ease(k) * 9 * dir, -ease(k) * 2); b.g.rotation.z = -ease(k) * .4 * dir; b.sh.material.opacity = .9 * (1 - k);
-    if (k >= 1) { b.g.visible = false; outK = null; }
+  // incoming: drops in with a bounce while its label assembles; outgoing: drops away, tilts and fades its shadow
+  for (const [k, m] of live) {
+    const b = B[k], e = clock - m.t0;
+    if (m.mode === 'in') {
+      const q = Math.min(1, Math.max(0, (e - .22) / .75)), o = 1 - Math.pow(1 - q, 3);   // waits for the old one to clear
+      b.g.visible = q > 0;
+      b.g.position.set((1 - o) * 9 * m.dir, 0, 0); b.g.rotation.z = (1 - o) * -.08 * m.dir;
+      b.label.material.userData.uT.value = 3;
+      const turn = (tSm - .5) * 1.5 + Math.sin(clock * .5) * .15;
+      b.spin.rotation.y += (turn - b.spin.rotation.y) * (1 - Math.exp(-dt * 5));
+      b.sh.material.opacity = .9 * q;
+    } else {
+      const q = Math.min(1, e / .42), o = q * q;
+      b.g.position.set(-o * 9 * m.dir, 0, 0); b.g.rotation.z = o * .08 * m.dir; b.sh.material.opacity = .9 * (1 - q);
+      if (q >= 1) { b.g.visible = false; b.label.material.userData.uT.value = 3; live.delete(k); }
+    }
   }
   // rain
   const fall = 6 + vel * 26;

@@ -10,14 +10,14 @@
 
   /* catalog: titles, prices, variant ids and coverage from their live products.json */
   const P = [
-    { k: 'luxfoam', g: 'wash', a: 'Lux', b: 'Foam', fn: 'Foam soap', price: 19.99, v: 59846347259985, c: '#6a4cf0', per: '8–16 washes', s2: ['Use with', 'Foam cannon or bucket'], d: 'Thick, clinging foam that loosens the dirt before your mitt ever touches the paint.' },
-    { k: 'luxpro', g: 'wash paint', a: 'Lux', b: 'Pro', fn: 'Waterless wash & protectant', price: 19.99, v: 59846340902993, c: '#ec4fc6', per: '15–30 vehicles', s2: ['Safe on', 'PPF, wraps & ceramic'], d: 'Nano-polymers wrap the dust so it lifts off the paint instead of dragging across it. No bucket, no hose, no driveway.' },
-    { k: 'luxquick', g: 'paint', a: 'Lux', b: 'Quick', fn: 'Detail spray', price: 17.99, v: 59846342246481, c: '#2fd39a', per: '15–25 vehicles', s2: ['Takes off', 'Dust, prints & fresh spots'], d: 'The between-washes bottle. Mist, buff, and the gloss is back.' },
+    { k: 'luxfoam', g: 'wash', a: 'Lux', b: 'Foam', fn: 'Foam soap', price: 19.99, v: 59846347259985, c: '#6a4cf0', per: '8–16 vehicles', s2: ['Safe on', 'Paint, PPF, wraps & ceramic'], d: 'Thick, clinging foam that loosens the dirt before your mitt ever touches the paint.' },
+    { k: 'luxpro', g: 'wash paint', a: 'Lux', b: 'Pro', fn: 'Waterless wash & protectant', price: 19.99, v: 59846340902993, c: '#ec4fc6', per: '15–30 vehicles', s2: ['Safe on', 'Paint, PPF & ceramic coatings'], d: 'Nano-polymers wrap the dust so it lifts off the paint instead of dragging across it. No bucket, no hose, no driveway.' },
+    { k: 'luxquick', g: 'paint', a: 'Lux', b: 'Quick', fn: 'Detail spray', price: 17.99, v: 59846342246481, c: '#2fd39a', per: '15–25 vehicles', s2: ['Safe on', 'Paint, PPF, wraps & ceramic'], d: 'The between-washes bottle. Mist, buff, and the gloss is back.' },
     { k: 'ceramicx', g: 'paint', a: 'Ceramic', b: 'X', fn: 'Ceramic detail spray', price: 27.99, v: 59846341853265, c: '#35b9e6', per: '10–20 vehicles', s2: ['Protection', 'Up to 8 months'], d: 'Ceramic gloss and protection out of a spray bottle. No coating appointment.' },
-    { k: 'wheelassassin', g: 'wheel', a: 'Wheel', b: 'Assassin', fn: 'Wheel cleaner', price: 17.99, v: 59846363152465, c: '#c9e01c', per: '12–20 vehicles', s2: ['Cuts', 'Brake dust, grease & road film'], d: 'Built for the dirtiest part of the car. Brake dust and road film come off the barrel and the face.' },
+    { k: 'wheelassassin', g: 'wheel', a: 'Wheel', b: 'Assassin', fn: 'Wheel cleaner', price: 17.99, v: 59846363152465, c: '#c9e01c', per: '12–20 vehicles', s2: ['Safe on', 'Clear-coat, chrome & alloy wheels'], d: 'Built for the dirtiest part of the car. Brake dust and road film come off the barrel and the face.' },
     { k: 'tirevenom', g: 'wheel', a: 'Tire', b: 'Venom', fn: 'Tire dressing', price: 22.99, v: 59846342475857, c: '#9aa0a6', per: '30–50 tires', s2: ['Lasts', 'Up to 3 months'], d: 'Dries to the touch for even, dark sidewalls, and none of it flung down your paint on the first pull-out.' },
-    { k: 'interiorx', g: 'int', a: 'Interior', b: 'X', fn: 'Interior cleaner', price: 19.99, v: 59846363545681, c: '#d0c64a', per: '15–25 vehicles', s2: ['Finish', 'No slick residue'], d: 'Dash, console, seats and door cards, clean without the greasy shine.' },
-    { k: 'restorx', g: 'int', a: 'Restor', b: 'X', fn: 'RVP plastic dressing', price: 22.99, v: 59846342377553, c: '#c9a98f', per: '20–40 vehicles', s2: ['Lasts', 'Up to 8 months'], d: 'Brings faded rubber, vinyl and plastic trim back to a deep, dry finish.' },
+    { k: 'interiorx', g: 'int', a: 'Interior', b: 'X', fn: 'Interior cleaner', price: 19.99, v: 59846363545681, c: '#d0c64a', per: '15–25 vehicles', s2: ['Safe on', 'Dash, door panels, vinyl & rubber'], d: 'Dash, console, seats and door cards, clean without the greasy shine.' },
+    { k: 'restorx', g: 'int', a: 'Restor', b: 'X', fn: 'RVP plastic dressing', price: 22.99, v: 59846342377553, c: '#c9a98f', per: '20–40 vehicles', s2: ['Lasts', 'Up to 6 mo exterior, 8 mo interior'], d: 'Brings faded rubber, vinyl and plastic trim back to a deep, dry finish.' },
     { k: 'birdielux', g: 'golf', a: 'Birdie', b: 'Lux', fn: 'Golf cart washless cleaner', price: 19.99, v: 59846406373457, c: '#7f86ff', per: 'Body, seats & roof', d: 'Washless clean for the body, seats and roof.' },
     { k: 'xfresh', g: 'golf', a: 'X', b: 'Fresh', fn: 'Golf cart interior cleaner', price: 19.99, v: 59846406013009, c: '#d9d27a', per: 'Seats, dash & floor', d: 'Seats, dash and floor, without the slick finish.' },
   ];
@@ -110,19 +110,21 @@
   /* ================= HERO: full-width slideshow (Shine Supply pattern), their photos and their taglines ================= */
   // each slide passes the brief: the owners, a car, or the product being used on one
   const SS = [
-    { img: 'luxpro-mclaren', side: 'r', kick: 'Waterless wash', h: 'Skip the hose. Keep the showroom shine.', cta: 'Shop LuxPro', k: 'luxpro' },
-    { img: 'foam-driveway', side: 'l', kick: 'Foam wash', h: 'Thick foam. Brilliant shine. Every wash.', cta: 'Shop LuxFoam', k: 'luxfoam' },
-    { img: 'founders', side: 'r', kick: 'Chase & Brandon', h: 'Two friends from 7th grade. One line of formulas.', cta: 'Our story', href: '#story' },
-    { img: 'tirevenom-hand', side: 'r', kick: 'Tire dressing', h: 'Deep, rich tires. Long-lasting protection.', cta: 'Shop TireVenom', k: 'tirevenom' },
-    { img: 'luxpro-mural', side: 'r', kick: 'Built in Arizona', h: 'Built through sacrifice.', cta: 'Shop the line', href: '#theater' },
-    { img: 'dry', side: 'r', kick: 'The final dry', h: 'Soft, streak-free, every panel.', cta: 'Shop kits', href: '#kits' },
+    { pair: ['luxpro-mclaren', 'chase'], kick: 'Waterless wash', h: 'Skip the hose. Keep the showroom shine.', cta: 'Shop LuxPro', k: 'luxpro' },
+    { pair: ['foam-driveway', 'foam'], kick: 'Foam wash', h: 'Thick foam. Brilliant shine. Every wash.', cta: 'Shop LuxFoam', k: 'luxfoam' },
+    { pair: ['founders', 'wipe'], kick: 'Chase & Brandon', h: 'Two friends from 7th grade. One line of formulas.', cta: 'Our story', href: '#story' },
+    { pair: ['tirevenom-hand', 'tirevenom'], kick: 'Tire dressing', h: 'Deep, rich tires. Long-lasting protection.', cta: 'Shop TireVenom', k: 'tirevenom' },
+    { pair: ['luxpro-mural', 'luxpro-front'], kick: 'Made in the USA', h: 'Built through sacrifice.', cta: 'Shop the line', href: '#theater' },
+    { pair: ['dry', 'wash'], kick: 'The final dry', h: 'Soft, streak-free, every panel.', cta: 'Shop kits', href: '#kits' },
   ];
+  const DIM = { founders: 1450, 'luxpro-mural': 1440, dry: 1500, wash: 1540 };   // heights at 1080 wide; the rest are 1080x1920
   const ssBox = $('#ssSlides'), ssDots = $('#ssDots');
   if (ssBox) {
+    // their photos shown whole: two per slide at full resolution, on a soft blur of the same shot (no cropping, no zoom)
     ssBox.innerHTML = SS.map((s, i) => `
-      <section class="ss-slide side-${s.side}" aria-roledescription="slide" aria-label="${i + 1} of ${SS.length}">
-        <picture><source media="(max-width: 900px)" srcset="assets/hero/slides/${s.img}.webp" />
-          <img src="assets/hero/wide/${s.img}.webp" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} /></picture>
+      <section class="ss-slide" aria-roledescription="slide" aria-label="${i + 1} of ${SS.length}">
+        <div class="ss-bg" style="background-image:url(assets/hero/full/${s.pair[0]}.webp)"></div>
+        <div class="ss-photos">${s.pair.map((p, j) => `<figure style="aspect-ratio:1080/${DIM[p] || 1920}"><img src="assets/hero/full/${p}.webp" alt="" width="1080" height="${DIM[p] || 1920}" ${i ? 'loading="lazy"' : (j ? '' : 'fetchpriority="high"')} /></figure>`).join('')}</div>
         <div class="ss-copy"><p class="ss-kick">${s.kick}</p><h${i ? 2 : 1} class="ss-h">${s.h}</h${i ? 2 : 1}>
           <a class="btn solid" href="${s.k ? cartURL(prod(s.k).v) : s.href}">${s.cta}</a></div>
       </section>`).join('');
