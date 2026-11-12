@@ -448,3 +448,109 @@ section.real{background:linear-gradient(180deg,#F1F8E4,#fff)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 .card .buy .btn{padding:0 12px;white-space:nowrap;font-size:9.5px;letter-spacing:.12em}
+
+/* ===== ROUND 5: neon hero carousel, chrome buttons, 3D theater, icon kit builder ===== */
+/* buttons: glossy lime (primary) and polished chrome (secondary), both read on light, lime and dark grounds */
+.btn.solid,.on-lime .btn.solid{position:relative;overflow:hidden;color:var(--ink);border:1px solid #5f9a00;
+  background:linear-gradient(180deg,#c6f55a 0%,#9be014 46%,#7fc000 54%,#9be014 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 -2px 0 rgba(0,0,0,.12),0 10px 22px -10px rgba(110,170,0,.9)}
+.btn.solid:hover,.on-lime .btn.solid:hover{background:linear-gradient(180deg,#d4ff6e 0%,#a8ec1f 46%,#8ccf06 54%,#a8ec1f 100%);transform:translateY(-2px)}
+.on-lime .btn.solid{border-color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 0 0 2px var(--ink),0 12px 24px -10px rgba(0,0,0,.5)}
+.btn.chrome{position:relative;overflow:hidden;color:var(--ink);border:1px solid #7d848b;
+  background:linear-gradient(180deg,#ffffff 0%,#e3e7ea 30%,#b7bec4 50%,#d9dde0 51%,#f4f6f7 100%);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.15),0 10px 22px -12px rgba(0,0,0,.55)}
+.btn.chrome:hover{transform:translateY(-2px);background:linear-gradient(180deg,#fff 0%,#eef1f3 30%,#c6ccd1 50%,#e6e9eb 51%,#fff 100%)}
+.btn.solid::after,.btn.chrome::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;transform:skewX(-24deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transition:left .7s var(--ease);pointer-events:none}
+.btn.solid:hover::after,.btn.chrome:hover::after{left:120%}
+.btn.sm.solid{box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 6px 14px -8px rgba(110,170,0,.9)}
+
+/* hero: dark brand stage */
+.hero{background:#0b1409;border-bottom:0}
+.hero::after{display:none}
+.h-copy{max-width:min(500px,36vw);top:50%}
+.h-badge{width:clamp(96px,8.6vw,140px);margin-bottom:16px;filter:drop-shadow(0 0 22px rgba(140,210,10,.45)) drop-shadow(0 12px 18px rgba(0,0,0,.5))}
+.hero .kick{color:var(--lime)}
+.hero h1{color:#fff;font-size:clamp(42px,4.4vw,78px);margin-top:14px}
+.hero h1 em{color:var(--ink)}
+.h-card{margin-top:22px;padding:16px 18px 0;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border:1px solid rgba(140,210,10,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden;color:rgba(255,255,255,.78)}
+.hc-top{display:flex;justify-content:space-between;align-items:center}
+.hc-n{font:italic 900 14px/1 var(--display);letter-spacing:.08em;color:var(--lime)}
+.hc-nav{display:flex;gap:6px}
+.hc-nav button{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.25);color:#fff;font-size:18px;line-height:1;transition:all .2s}
+.hc-nav button:hover{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.hc-body{min-height:150px;padding:6px 0 14px}
+.hc-body>*{opacity:0}
+.hc-body.in>*{animation:rise .55s var(--ease) forwards}
+.hc-body.in>:nth-child(2){animation-delay:.05s}.hc-body.in>:nth-child(3){animation-delay:.1s}.hc-body.in>:nth-child(4){animation-delay:.15s}
+.hc-fn{font:800 10.5px/1.3 var(--cap);letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.hc-name{font-size:clamp(30px,2.6vw,44px);color:#fff;margin:6px 0 8px}
+.hc-name em{background:none;padding:0;margin:0;color:color-mix(in srgb,var(--c,#8cd20a) 80%,#fff)}
+.hc-d{font-size:14px;line-height:1.5;max-width:44ch}
+.hc-buy{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+.hc-buy b{font:italic 900 24px/1 var(--display);color:#fff}
+.hc-buy span{font-size:12.5px;color:rgba(255,255,255,.55);flex:1}
+.hc-bar{height:3px;margin:0 -18px;background:rgba(255,255,255,.1)}
+.hc-bar i{display:block;height:100%;background:var(--c,var(--lime));transform-origin:left;transform:scaleX(0)}
+.h-card.held .hc-bar i{animation-play-state:paused!important}
+@keyframes hcbar{to{transform:scaleX(1)}}
+.h-copy .ctas{margin-top:20px}
+.hint{color:rgba(255,255,255,.5)}
+
+/* theater: the 3D room fills the stage */
+#thgl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.th-glow,.th-ghost,.th-bottle{display:none}
+.th-spacer{height:1px}
+.th-head,.th-info,.th-rail,.th-bar{z-index:2}
+.th-rail button{color:var(--ink);opacity:.55}.th-rail button.on{opacity:1}
+.th-rail button span{text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.th-rail button.on i{box-shadow:0 0 0 4px rgba(255,255,255,.9),0 0 0 6px var(--c)}
+
+/* kit builder: icon tiles */
+.fb-tile{justify-content:flex-start;align-items:flex-start;aspect-ratio:auto;min-height:290px;padding:22px 20px 20px;background:#fff;color:var(--ink);gap:6px;text-align:left}
+.fb-tile::after{display:none}
+.t-ph{position:absolute;inset:0;z-index:-1;margin:0;opacity:0;transition:opacity .45s var(--ease)}
+.t-ph img{width:100%;height:100%;object-fit:cover}
+.t-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(11,14,16,.92) 10%,rgba(11,14,16,.55) 60%,rgba(11,14,16,.35))}
+.fb-tile:hover .t-ph,.fb-tile.sel .t-ph{opacity:1}
+.fb-tile:hover,.fb-tile.sel{color:#fff}
+.fb-tile:hover small,.fb-tile.sel small{color:rgba(255,255,255,.8)}
+.fb-tile small{color:var(--mut)}
+.t-ic{display:grid;place-items:center;width:96px;height:96px;margin-bottom:auto;border-radius:24px;background:var(--bg);transition:background .35s,transform .45s var(--spring)}
+.t-ic svg{width:64px;height:64px;fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round;overflow:visible}
+.t-ic svg .f{fill:var(--lime);stroke:none}
+.t-ic svg .w{fill:#fff}
+.t-ic svg .k{fill:var(--lime);stroke:var(--ink);stroke-width:1.6}
+.t-ic svg .k-s{stroke:var(--lime-deep)}
+.t-ic svg .x{stroke:#e5484d}
+.fb-tile:hover .t-ic,.fb-tile.sel .t-ic{background:var(--lime);transform:rotate(-6deg) scale(1.06)}
+.fb-tile:hover .t-ic svg .f,.fb-tile.sel .t-ic svg .f{fill:#fff}
+.fb-tile b{margin-top:18px;font-size:clamp(20px,1.7vw,26px)}
+.t-lvl{display:flex;gap:4px;margin-top:16px}
+.t-lvl i{width:22px;height:8px;border-radius:2px;background:var(--line2);transform:skewX(-24deg)}
+.t-lvl i.on{background:var(--lime)}
+.fb-tile:hover .t-lvl i:not(.on),.fb-tile.sel .t-lvl i:not(.on){background:rgba(255,255,255,.25)}
+.t-ck{border-color:var(--line2)}
+.t-n{display:none}
+.fb-tiles.n4 .fb-tile{min-height:270px}
+
+@media (max-width:1200px){.fb-tiles.n4 .fb-tile{aspect-ratio:auto;min-height:230px}}
+@media (max-width:900px){
+  .hero{background:#0b1409}
+  #gl{height:60svh;min-height:380px}
+  .h-copy{max-width:none;margin-top:-30px;padding:0 20px 36px}
+  .h-badge{width:84px}
+  .hero h1{font-size:clamp(38px,11vw,56px)}
+  .hc-d{display:none}.hc-body{min-height:0}
+  .hint{display:none}
+  .fb-tile{min-height:0;padding:16px}.fb-tiles.n4 .fb-tile,.fb-tiles.n3 .fb-tile:last-child{min-height:0;aspect-ratio:auto}
+  .t-ic{width:72px;height:72px;border-radius:18px}.t-ic svg{width:48px;height:48px}
+  .fb-tile b{margin-top:12px;font-size:18px}
+}
+
+.hero h1 em{background:linear-gradient(transparent 6%,var(--lime) 6%,var(--lime) 96%,transparent 96%);padding:0 .12em}
+
+.t-ic{width:124px;height:124px;border-radius:28px}.t-ic svg{width:88px;height:88px}
+.fb-tiles.n4 .t-ic{width:108px;height:108px}.fb-tiles.n4 .t-ic svg{width:76px;height:76px}
+@media (max-width:900px){.t-ic,.fb-tiles.n4 .t-ic{width:76px;height:76px;border-radius:18px}.t-ic svg,.fb-tiles.n4 .t-ic svg{width:52px;height:52px}}

@@ -23,12 +23,33 @@
   ];
   const prod = k => P.find(x => x.k === k);
 
+
+  /* ================= HERO: the card follows the carousel ================= */
+  const hcBody = $('#hcBody'), hcBar = $('#hcBar'), hcard = $('#hcard');
+  const hcShow = ({ k, i, n, hold }) => {
+    const p = prod(k); if (!p) return;
+    $('#hcN').textContent = `${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+    hcard.style.setProperty('--c', p.c);
+    hcBody.classList.remove('in'); void hcBody.offsetWidth;
+    hcBody.innerHTML = `<p class="hc-fn">${p.fn}</p><h3 class="hc-name">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
+      <p class="hc-d">${p.d}</p>
+      <div class="hc-buy"><b>${money(p.price)}</b><span>${p.per}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a></div>`;
+    hcBody.classList.add('in');
+    hcBar.style.animation = 'none'; void hcBar.offsetWidth; hcBar.style.animation = `hcbar ${hold}s linear forwards`;
+  };
+  addEventListener('lux:show', e => hcShow(e.detail));
+  $('#hcPrev').addEventListener('click', () => window.__hero && window.__hero.prev());
+  $('#hcNext').addEventListener('click', () => window.__hero && window.__hero.next());
+  hcard.addEventListener('mouseenter', () => { window.__hero && window.__hero.pause(true); hcard.classList.add('held'); });
+  hcard.addEventListener('mouseleave', () => { window.__hero && window.__hero.pause(false); hcard.classList.remove('held'); });
+  // until the carousel starts, show the bottle that's forming
+  hcShow({ k: 'luxpro', i: 0, n: 8, hold: 0.001 }); hcBar.style.animation = 'none';
+
   /* ================= THE LINE: pinned theater ================= */
   const TH = P.filter(p => p.g !== 'golf');
-  const th = $('#theater'), thInfo = $('#thInfo'), thBottle = $('#thBottle'), thRail = $('#thRail'), thGhost = $('#thGhost');
+  const th = $('#theater'), thInfo = $('#thInfo'), thRail = $('#thRail');
   th.style.setProperty('--n', TH.length);
   $('#thTot').textContent = String(TH.length).padStart(2, '0');
-  thBottle.innerHTML = TH.map((p, i) => `<img src="assets/img/bottles/${p.k}.webp" alt="${p.a}${p.b} ${p.fn}" data-i="${i}" ${i > 1 ? 'loading="lazy"' : ''} />`).join('');
   thRail.innerHTML = TH.map((p, i) => `<li><button type="button" data-i="${i}" style="--c:${p.c}"><i></i><span>${p.a}${p.b}</span></button></li>`).join('');
   const info = p => `
     <p class="th-fn">${p.fn}</p>
@@ -43,12 +64,10 @@
     const p = TH[i];
     th.style.setProperty('--c', p.c);
     $('#thNum').textContent = String(i + 1).padStart(2, '0');
-    $$('img', thBottle).forEach((im, j) => { im.className = j === i ? 'on' : j < i ? 'past' : 'next'; });
     $$('button', thRail).forEach((b, j) => b.classList.toggle('on', j === i));
+    dispatchEvent(new CustomEvent('lux:theater', { detail: { k: p.k, i, dir, c: p.c, name: (p.a + p.b).toUpperCase() } }));
     thInfo.classList.remove('in'); thInfo.style.setProperty('--dir', dir);
     void thInfo.offsetWidth; thInfo.innerHTML = info(p); thInfo.classList.add('in');
-    thGhost.textContent = (p.a + p.b).toUpperCase();
-    thGhost.classList.remove('in'); void thGhost.offsetWidth; thGhost.classList.add('in');
   };
   const thProg = () => {
     const r = th.getBoundingClientRect(), pin = $('.th-pin', th).offsetHeight;
@@ -57,12 +76,14 @@
     thSet(i);
     $('#thBar').style.transform = `scaleX(${p})`;
     th.style.setProperty('--t', t.toFixed(3));
+    window.__theater && window.__theater.progress(p, t);
   };
   thRail.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     const pin = $('.th-pin', th).offsetHeight, top = th.getBoundingClientRect().top + scrollY;
     scrollTo({ top: top + (th.offsetHeight - pin) * ((+b.dataset.i + .5) / TH.length), behavior: 'smooth' });
   });
+  window.__thKeys = TH.map(p => ({ k: p.k, c: p.c, name: (p.a + p.b).toUpperCase() }));
   thSet(0);
 
   /* ================= shop all grid ================= */
@@ -99,6 +120,19 @@
     </article>`).join('');
 
   /* ================= KIT BUILDER ================= */
+  /* kit builder icons: drawn for this page, ink line + badge green fill */
+  const ICON = {
+    new: '<svg viewBox="0 0 64 64"><rect x="10" y="12" width="44" height="40" rx="6" class="f"/><rect x="10" y="12" width="44" height="40" rx="6"/><path d="M25 21v22h15" stroke-width="6" stroke-linecap="square"/><path d="M50 6l1.6 3.4L55 11l-3.4 1.6L50 16l-1.6-3.4L45 11l3.4-1.6z" class="k"/></svg>',
+    some: '<svg viewBox="0 0 64 64"><path d="M16 26h32l-4 28H20z" class="f"/><path d="M16 26h32l-4 28H20zM14 26h36"/><path d="M20 26c0-10 24-10 24 0"/><rect x="30" y="34" width="16" height="9" rx="3" class="k"/><circle cx="22" cy="14" r="3"/><circle cx="31" cy="9" r="2"/><circle cx="40" cy="15" r="2.5"/></svg>',
+    pro: '<svg viewBox="0 0 64 64"><circle cx="22" cy="42" r="13" class="f"/><circle cx="22" cy="42" r="13"/><circle cx="22" cy="42" r="5"/><path d="M28 31l14-14 8 8-14 14M42 17l4-4 8 8-4 4"/><path d="M50 37l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8z" class="k"/></svg>',
+    paint: '<svg viewBox="0 0 64 64"><path d="M6 40l5-10c2-4 5-6 10-6h20c4 0 7 2 10 6l7 4v8H6z" class="f"/><path d="M6 40l5-10c2-4 5-6 10-6h20c4 0 7 2 10 6l7 4v8H6zM16 24l4-8h18l6 8"/><circle cx="17" cy="44" r="5" class="w"/><circle cx="47" cy="44" r="5" class="w"/><circle cx="24" cy="31" r="1.2" class="k"/><circle cx="31" cy="34" r="1.2" class="k"/><circle cx="37" cy="30" r="1.2" class="k"/><path d="M52 10l1.6 3.4L57 15l-3.4 1.6L52 20l-1.6-3.4L47 15l3.4-1.6z" class="k"/></svg>',
+    wheel: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" class="f"/><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="16"/><circle cx="32" cy="32" r="4"/><path d="M32 16v12M32 36v12M16 32h12M36 32h12M21 21l8 8M35 35l8 8M43 21l-8 8M29 35l-8 8"/><circle cx="14" cy="16" r="1.6" class="k"/><circle cx="50" cy="12" r="1.6" class="k"/><circle cx="54" cy="50" r="1.6" class="k"/></svg>',
+    int: '<svg viewBox="0 0 64 64"><path d="M22 8h12c3 0 5 2 5 5l-3 25H22l-4-25c0-3 2-5 4-5z" class="f"/><path d="M22 8h12c3 0 5 2 5 5l-3 25H22l-4-25c0-3 2-5 4-5zM16 38h30c3 0 5 2 5 5v3H14v-3c0-3 1-5 2-5zM22 46l-3 10M42 46l3 10"/><path d="M50 14l1.6 3.4L55 19l-3.4 1.6L50 24l-1.6-3.4L45 19l3.4-1.6z" class="k"/></svg>',
+    all: '<svg viewBox="0 0 64 64"><path d="M12 38l4-8c2-3 4-5 8-5h16c3 0 6 2 8 5l5 3v6H12z" class="f"/><path d="M12 38l4-8c2-3 4-5 8-5h16c3 0 6 2 8 5l5 3v6H12z"/><circle cx="21" cy="40" r="4" class="w"/><circle cx="44" cy="40" r="4" class="w"/><path d="M8 26a26 26 0 0 1 46-10M56 38a26 26 0 0 1-46 10"/><path d="M54 8v8h-8M10 56v-8h8" class="k-s"/></svg>',
+    none: '<svg viewBox="0 0 64 64"><path d="M32 8c8 12 14 20 14 28a14 14 0 0 1-28 0c0-8 6-16 14-28z" class="f"/><path d="M32 8c8 12 14 20 14 28a14 14 0 0 1-28 0c0-8 6-16 14-28z"/><path d="M10 10l44 44" stroke-width="5" class="x"/></svg>',
+    hose: '<svg viewBox="0 0 64 64"><path d="M8 48c0-10 8-14 16-14h10" /><path d="M8 54c0-14 10-22 22-22h4"/><rect x="33" y="27" width="12" height="12" rx="2" class="f"/><rect x="33" y="27" width="12" height="12" rx="2"/><path d="M45 31h6"/><path d="M53 22c4 4 4 16 0 20M58 18c6 7 6 21 0 28" class="k-s"/></svg>',
+    pw: '<svg viewBox="0 0 64 64"><path d="M6 40h20l4-6h10v8H30l-6 14h-8l4-12H6z" class="f"/><path d="M6 40h20l4-6h10v8H30l-6 14h-8l4-12H6zM40 37h8"/><circle cx="54" cy="30" r="6" class="w"/><circle cx="54" cy="30" r="6"/><circle cx="56" cy="19" r="4.5" class="w"/><circle cx="56" cy="19" r="4.5"/><circle cx="47" cy="23" r="3.5" class="w"/><circle cx="47" cy="23" r="3.5"/></svg>',
+  };
   const Q = [
     { id: 'lvl', h: 'How much detailing <em>have you done?</em>', o: [
       ['new', 'Basically none', 'It’s never had a real detail. Dust, film, the works.', 'assets/img/kb/new.webp'],
@@ -180,9 +214,11 @@
     fq.innerHTML = `<p class="fb-n">Question ${step + 1} of 3</p><h3>${q.h}</h3>
       <div class="fb-tiles n${q.o.length}">${q.o.map(([v, t, d, img, cls], n) => `
         <button type="button" class="fb-tile${ans[q.id] === v ? ' sel' : ''}" data-v="${v}" style="--d:${n * 60}ms">
-          <figure class="${cls || ''}"><img src="${img}" alt="" loading="lazy" /></figure>
-          <span class="t-n">${String.fromCharCode(65 + n)}</span><span class="t-ck" aria-hidden="true"></span>
+          <span class="t-ck" aria-hidden="true"></span>
+          <span class="t-ic" aria-hidden="true">${ICON[v]}</span>
+          ${q.id === 'lvl' ? `<span class="t-lvl" aria-label="Level ${n + 1} of 3">${[0, 1, 2].map(j => `<i class="${j <= n ? 'on' : ''}"></i>`).join('')}</span>` : ''}
           <b>${t}</b><small>${d}</small>
+          <figure class="t-ph"><img src="${img}" alt="" loading="lazy" /></figure>
         </button>`).join('')}</div>
       ${step ? '<button type="button" class="fb-back">← Back</button>' : ''}`;
     shelf(pick(ans).map(item));
