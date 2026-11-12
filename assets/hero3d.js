@@ -26,18 +26,36 @@ const rim = new THREE.DirectionalLight(0x9be014, 1.6); rim.position.set(4, 6, -8
 scene.add(new THREE.HemisphereLight(0xdfffe0, 0x0a0f08, .45));
 const camera = new THREE.PerspectiveCamera(26, 1, .05, 200);
 
-/* ---------- backdrop: dark brand-green stage + neon wordmark, painted to fit the frame ---------- */
-const baseC = document.createElement('canvas'), neonC = document.createElement('canvas');
-const baseT = new THREE.CanvasTexture(baseC), neonT = new THREE.CanvasTexture(neonC);
-baseT.colorSpace = neonT.colorSpace = THREE.SRGBColorSpace;
-const bgU = { uBase: { value: baseT }, uNeon: { value: neonT }, uOn: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) } };
+/* ---------- backdrop: LusterLux's own pop-up meet footage (tools: assets/hero/meet-bg.mp4, cut from their TikTok,
+   defocused like a lens behind product), with the neon wordmark added on top ---------- */
+const vid = document.createElement('video');
+Object.assign(vid, { src: 'assets/hero/meet-bg.mp4', muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', crossOrigin: 'anonymous' });
+vid.setAttribute('muted', ''); vid.setAttribute('playsinline', '');
+vid.play().catch(() => {});
+const vidT = new THREE.VideoTexture(vid); vidT.colorSpace = THREE.SRGBColorSpace;
+const posterT = new THREE.TextureLoader().load('assets/hero/meet-bg.jpg'); posterT.colorSpace = THREE.SRGBColorSpace;
+const neonC = document.createElement('canvas');
+const neonT = new THREE.CanvasTexture(neonC); neonT.colorSpace = THREE.SRGBColorSpace;
+const bgU = { uVid: { value: posterT }, uNeon: { value: neonT }, uOn: { value: 0 }, uFoot: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
+  uAsp: { value: 16 / 9 }, uHz: { value: .4 }, uFocus: { value: new THREE.Vector2(.5, .5) } };
+vid.addEventListener('playing', () => { bgU.uVid.value = vidT; }, { once: true });
 const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
   uniforms: bgU, depthWrite: false, depthTest: false,
   vertexShader: 'void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }',
-  fragmentShader: `uniform sampler2D uBase, uNeon; uniform float uOn; uniform vec2 uRes;
+  fragmentShader: `uniform sampler2D uVid, uNeon; uniform float uOn, uFoot, uAsp, uHz; uniform vec2 uRes, uFocus;
     void main(){
       vec2 s = gl_FragCoord.xy / uRes;
-      vec3 c = texture2D(uBase, s).rgb + texture2D(uNeon, s).rgb * uOn;
+      float ra = uRes.x / uRes.y;
+      vec2 sc = ra > uAsp ? vec2(1.0, uAsp / ra) : vec2(ra / uAsp, 1.0);
+      vec3 v = texture2D(uVid, uFocus + (s - .5) * sc).rgb;
+      // grade: pull the footage down so the neon and the bottles carry the frame; keep its own greens
+      v = pow(v, vec3(1.2)) * .46;
+      // the copy side and the ground in front of the bottles sit darker
+      float dark = .62 * (1.0 - smoothstep(.05, .5, s.x)) * step(1.0, ra) + .4 * smoothstep(uHz, uHz - .3, s.y);
+      v *= 1.0 - dark;
+      float vg = length((s - vec2(.6, .55)) * vec2(1.1, 1.0));
+      v *= 1.0 - .6 * smoothstep(.35, 1.0, vg);
+      vec3 c = v * uFoot + texture2D(uNeon, s).rgb * uOn;
       gl_FragColor = vec4(c, 1.0);
       #include <colorspace_fragment>
     }` }));
@@ -48,46 +66,33 @@ document.fonts.load('italic 900 120px Archivo').then(() => { fontReady = true; l
 const paintState = {};
 function paint() {
   const { w, h, hz, nx, ny, fs } = paintState; if (!w) return;
-  for (const c of [baseC, neonC]) { c.width = w; c.height = h; }
-  // base: deep green room, a lit floor, a soft lime bloom behind the sign
-  let x = baseC.getContext('2d');
-  let g = x.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, '#0e1a0c'); g.addColorStop(hz / h * .98, '#16280f'); g.addColorStop(Math.min(1, hz / h + .002), '#0b1309'); g.addColorStop(1, '#050805');
-  x.fillStyle = g; x.fillRect(0, 0, w, h);
-  g = x.createRadialGradient(nx, ny, 0, nx, ny, fs * 4.2); g.addColorStop(0, 'rgba(140,210,10,.20)'); g.addColorStop(1, 'rgba(140,210,10,0)');
-  x.fillStyle = g; x.fillRect(0, 0, w, h);
-  g = x.createRadialGradient(nx, hz + (h - hz) * .55, 0, nx, hz + (h - hz) * .55, w * .45); g.addColorStop(0, 'rgba(190,230,150,.13)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-  x.fillStyle = g; x.fillRect(0, hz, w, h - hz);
-  // the badge's speed lines, faint, across the wall
-  x.save(); x.globalAlpha = .07; x.strokeStyle = '#8cd20a'; x.lineWidth = Math.max(2, fs * .03);
-  for (let i = -6; i < 30; i++) { const sx = i * fs * .42; x.beginPath(); x.moveTo(sx, hz); x.lineTo(sx + hz * .55, 0); x.stroke(); }
-  x.restore();
-  // seam where the wall meets the floor
-  g = x.createLinearGradient(0, 0, w, 0); g.addColorStop(0, 'rgba(140,210,10,0)'); g.addColorStop(.5, 'rgba(140,210,10,.35)'); g.addColorStop(1, 'rgba(140,210,10,0)');
-  x.fillStyle = g; x.fillRect(0, hz - 1, w, 2);
-  const v = x.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .3, w / 2, h / 2, Math.max(w, h) * .75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)');
-  x.fillStyle = v; x.fillRect(0, 0, w, h);
-  baseT.needsUpdate = true;
-
-  // neon layer (added on top, so it can flicker on): LUSTER in chrome-white tube, LUX in their green, then the speed lines
-  x = neonC.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
+  neonC.width = w; neonC.height = h;
+  const x = neonC.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
   if (fontReady) {
     x.font = `italic 900 ${fs}px Archivo`; try { x.fontStretch = 'expanded'; } catch (e) {}
     const wa = x.measureText('LUSTER').width, wb = x.measureText('LUX').width, lines = fs * .9;
     const total = wa + wb + lines, x0 = nx - total / 2;
-    const tube = (txt, tx, ty, col, core) => {
-      x.lineJoin = 'round';
-      for (const [blur, lw, a] of [[fs * .55, fs * .07, .45], [fs * .22, fs * .055, .7], [fs * .06, fs * .04, .95]]) {
-        x.save(); x.shadowColor = col; x.shadowBlur = blur; x.globalAlpha = a; x.strokeStyle = col; x.lineWidth = lw; x.strokeText(txt, tx, ty); x.restore();
+    const glow = (col, draw, lw) => {
+      x.lineJoin = 'round'; x.lineCap = 'round';
+      for (const [blur, k, a] of [[fs * .55, 1.75, .45], [fs * .22, 1.4, .7], [fs * .06, 1, .95]]) {
+        x.save(); x.shadowColor = col; x.shadowBlur = blur; x.globalAlpha = a; x.strokeStyle = col; x.lineWidth = lw * k; draw(); x.restore();
       }
+    };
+    const tube = (txt, tx, ty, col, core) => {
+      glow(col, () => x.strokeText(txt, tx, ty), fs * .04);
       x.save(); x.strokeStyle = core; x.lineWidth = fs * .016; x.strokeText(txt, tx, ty); x.restore();
+    };
+    // two water lines under the word, like the splash under the LL on their badge
+    const wave = (y0, amp, ph, col, core) => {
+      const path = () => { x.beginPath(); for (let i = 0; i <= 80; i++) { const t = i / 80, px = x0 + fs * .05 + t * (wa + wb - fs * .1); const py = y0 + Math.sin(t * Math.PI * 4 + ph) * amp * (0.35 + 0.65 * Math.sin(t * Math.PI)); i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); };
+      glow(col, path, fs * .03);
+      x.save(); x.strokeStyle = core; x.lineWidth = fs * .011; x.lineCap = 'round'; path(); x.restore();
     };
     const sign = flip => {
       x.save();
-      if (flip) { x.translate(0, hz * 2); x.scale(1, -1); x.globalAlpha = .22; x.filter = `blur(${Math.round(fs * .06)}px)`; }
+      if (flip) { x.translate(0, hz * 2); x.scale(1, -1); x.globalAlpha = .2; x.filter = `blur(${Math.round(fs * .06)}px)`; }
       tube('LUSTER', x0, ny, '#d9ecff', '#ffffff');
       tube('LUX', x0 + wa, ny, '#8cd20a', '#eaffb8');
-      // speed lines trailing the word, like the badge
       const lx = x0 + wa + wb + fs * .12;
       for (let i = 0; i < 4; i++) {
         const yy = ny - fs * (.72 - i * .17), len = lines * (1 - i * .2);
@@ -95,6 +100,8 @@ function paint() {
         x.beginPath(); x.moveTo(lx + fs * .1 * i, yy); x.lineTo(lx + fs * .1 * i + len * .7, yy); x.stroke();
         x.strokeStyle = '#eaffb8'; x.lineWidth = fs * .014; x.shadowBlur = 0; x.stroke(); x.restore();
       }
+      wave(ny + fs * .32, fs * .07, 0, '#1fb4e8', '#d6f6ff');
+      wave(ny + fs * .5, fs * .05, 1.6, '#1fb4e8', '#bdefff');
       x.restore();
     };
     sign(false); sign(true);
@@ -169,8 +176,9 @@ function layout() {
   const mc = document.createElement('canvas').getContext('2d'); mc.font = 'italic 900 100px Archivo'; try { mc.fontStretch = 'expanded'; } catch (e) {}
   const unit = (mc.measureText('LUSTERLUX').width + 90 + 12) / 100;
   const fs = Math.min(W * (mobile ? .88 : .5) / unit, H * .15);
-  const ny = Math.max(fs * 1.15, Math.min(backTop - fs * .35, hz - fs * .2));
+  const ny = Math.max(fs * 1.15, Math.min(backTop - fs * .85, hz - fs * .75));
   Object.assign(paintState, { w: Math.round(W * k), h: Math.round(H * k), hz: hz * k, nx: nx * k, ny: ny * k, fs: fs * k });
+  bgU.uHz.value = 1 - hz / H; bgU.uFocus.value.set(mobile ? .5 : .55, .52);
   paint();
 }
 layout(); addEventListener('resize', layout);
@@ -230,7 +238,7 @@ function frame(now) {
   const cT = Math.min(1, Math.max(0, (T - 4.75) / .7));
   hero.cap.visible = cT > 0; hero.cap.position.y = CAPY + (1 - outBack(cT)) * 1.3; hero.cap.rotation.y = (1 - cT) * -Math.PI * 3;
   hero.sh.material.opacity = .9 * sm(3.0, 4.2, T);
-  bgU.uOn.value = flick(T);
+  bgU.uOn.value = flick(T); bgU.uFoot.value = sm(4.2, 6.2, T);
 
   // 2. camera: macro → the bottle → wide on the turntable
   const pull = ease(sm(.9, 3.3, T)), wide = ease(sm(5.4, 7.4, T));

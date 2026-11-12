@@ -32,24 +32,20 @@ const room = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMater
       vec2 s = gl_FragCoord.xy / uRes;
       vec3 col = mix(uB, uA, uMix);
       // the bottle side is saturated, the copy side fades to a pale tint of the same colour
-      float sat = uMob > .5 ? smoothstep(.34, .7, s.y) : smoothstep(.3, .78, s.x);
+      float sat = uMob > .5 ? smoothstep(.45, .8, s.y) : smoothstep(.3, .78, s.x);
       vec3 pale = mix(vec3(1.0), col, .12);
       vec3 deep = col * .78 + .04;
       vec3 c = mix(pale, deep, sat);
       // spotlight behind the bottle
       vec2 d = (s - uFocus) * vec2(uRes.x / uRes.y, 1.0);
       c += col * .35 * exp(-dot(d, d) * 5.0) * sat;
-      // the badge's speed lines, drifting
-      float a = dot(gl_FragCoord.xy, normalize(vec2(.88, .47))) / uRes.y * 38.0 + uDrift;
-      float line = smoothstep(.86, .9, fract(a)) * (1.0 - smoothstep(.9, .94, fract(a)));
-      c = mix(c, vec3(1.0), line * .14 * sat);
       // the name, huge, behind the bottle
-      vec2 nuv = vec2((s.x - uFocus.x) * (uRes.x / uRes.y) * .62 + .5, (s.y - uFocus.y) * 1.1 + .5);
+      vec2 nuv = vec2((s.x - uFocus.x) * (uRes.x / uRes.y) * .58 + .5, (s.y - uFocus.y - (uMob > .5 ? .02 : .2)) * 1.05 + .5);
       vec4 na = texture2D(uNameA, nuv), nb = texture2D(uNameB, nuv);
       float n = mix(nb.a, na.a, uMix);
-      c = mix(c, vec3(1.0), n * .42 * sat);
+      c = mix(c, vec3(1.0), n * .92 * sat);
       // floor: a lit line and a darker floor under the bottle
-      float fy = uMob > .5 ? .40 : .12;
+      float fy = uMob > .5 ? .56 : .17;
       c *= 1.0 - .18 * smoothstep(fy + .02, fy - .06, s.y) * sat;
       c = mix(c, vec3(.75, 1.0, .35), smoothstep(.006, .0, abs(s.y - fy)) * .8 * sat);
       // vignette
@@ -59,13 +55,15 @@ const room = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMater
     }` }));
 room.frustumCulled = false; room.renderOrder = -1000; scene.add(room);
 let nameSlot = 0;
-const drawName = (txt) => {
+const drawName = (txt, sub) => {
   nameSlot ^= 1; const c = nameC[nameSlot], x = c.getContext('2d');
   c.width = 2048; c.height = 512; x.clearRect(0, 0, 2048, 512);
   x.font = 'italic 900 330px Archivo'; try { x.fontStretch = 'expanded'; } catch (e) {}
   const w = x.measureText(txt).width, f = Math.min(1, 1960 / w);
   x.save(); x.translate(1024, 256); x.scale(f, f); x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.lineWidth = 7; x.strokeStyle = '#fff'; x.strokeText(txt, 0, 0); x.globalAlpha = .25; x.fillStyle = '#fff'; x.fillText(txt, 0, 0); x.restore();
+  x.globalAlpha = .9; x.fillStyle = '#fff'; x.fillText(txt, 0, -20); x.restore();
+  if (sub) { x.save(); x.font = '800 54px Archivo'; try { x.fontStretch = 'expanded'; } catch (e) {} x.textAlign = 'center'; x.fillStyle = 'rgba(255,255,255,.85)';
+    try { x.letterSpacing = '14px'; } catch (e) {} x.fillText(sub.toUpperCase(), 1024, 440); x.restore(); }
   nameT[nameSlot].needsUpdate = true;
   // uniforms: A = newest
   U.uNameB.value = U.uNameA.value; U.uNameA.value = nameT[nameSlot];
@@ -78,23 +76,27 @@ const B = {};
 for (const { k } of KEYS) { const b = makeBottle(k); b.g.visible = false; stageG.add(b.g); B[k] = b; }
 
 /* ---------- rain: water drops that fall faster as you scroll ---------- */
-const NR = reduce ? 0 : 170;
+const NR = 0;
 const dropGeo = new THREE.SphereGeometry(1, 10, 8);
 const dropMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .5, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
 const rain = new THREE.InstancedMesh(dropGeo, dropMat, Math.max(1, NR)); rain.frustumCulled = false; scene.add(rain);
+rain.visible = NR > 0;
 const drops = Array.from({ length: NR }, () => ({ x: -3.5 + Math.random() * 10, y: Math.random() * 14 - 2, z: -4 + Math.random() * 6, s: .012 + Math.random() * .022, v: .7 + Math.random() * .6 }));
 /* ---------- spray burst ---------- */
 const NS = reduce ? 0 : 160;
 const sprayMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .85, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
 const spray = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 12, 10), sprayMat, Math.max(1, NS)); spray.frustumCulled = false; scene.add(spray);
+{ const Z = new THREE.Matrix4().makeScale(0, 0, 0); for (let i = 0; i < Math.max(1, NS); i++) spray.setMatrixAt(i, Z); spray.visible = NS > 0; }
 const sp = Array.from({ length: NS }, () => ({ p: new THREE.Vector3(), v: new THREE.Vector3(), life: 0, s: 0 }));
-const burst = (col) => {
-  sprayMat.color.set(col).lerp(new THREE.Color(1, 1, 1), .45);
+const burst = (col, y = 3.4) => {
+  sprayMat.color.set(col).lerp(new THREE.Color(.8, .95, 1), .55);
   for (const q of sp) {
-    q.p.set((Math.random() - .5) * .3, 6.2, (Math.random() - .5) * .3);
-    const a = Math.random() * Math.PI * 2, up = 2 + Math.random() * 5, out = 3 + Math.random() * 6;
-    q.v.set(Math.cos(a) * out, up, Math.sin(a) * out * .6 + 2);
-    q.life = .7 + Math.random() * .7; q.s = .03 + Math.random() * .07;
+    // a ring of droplets thrown off the glass where the two bottles meet
+    const a = Math.random() * Math.PI * 2, r = .9 + Math.random() * .2;
+    q.p.set(Math.cos(a) * r, y + (Math.random() - .5) * 2.4, Math.sin(a) * r * .8);
+    const out = 3 + Math.random() * 7, up = 1 + Math.random() * 4;
+    q.v.set(Math.cos(a) * out, up, Math.sin(a) * out * .7 + 1.5);
+    q.life = .6 + Math.random() * .8; q.s = .025 + Math.random() * .06;
   }
 };
 
@@ -106,11 +108,11 @@ function layout() {
   mobile = innerWidth <= 900; U.uMob.value = mobile ? 1 : 0;
   renderer.getDrawingBufferSize(U.uRes.value);
   const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  const frac = mobile ? .36 : .74, fx = mobile ? .5 : .56, floorY = mobile ? .40 : .12;
+  const frac = mobile ? .31 : .66, fx = mobile ? .5 : .56, floorY = mobile ? .56 : .17;
   const d = 6.4 / (2 * tanV * frac), viewH = 2 * d * tanV, viewW = viewH * camera.aspect;
   // the bottle stands on the floor line at fx across
   const cy = (.5 - floorY) * viewH;                 // world height at the centre of the frame
-  camera.position.set(-(fx - .5) * viewW, cy + .5, d); camera.lookAt(-(fx - .5) * viewW, cy, 0);
+  camera.position.set(-(fx - .5) * viewW, cy, d); camera.lookAt(-(fx - .5) * viewW, cy, 0);
   U.uFocus.value.set(fx, floorY + frac * .5);
 }
 layout(); addEventListener('resize', layout);
@@ -118,15 +120,15 @@ layout(); addEventListener('resize', layout);
 /* ---------- swapping formulas ---------- */
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const outBack = t => { const c1 = 1.3, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
-let curK = null, outK = null, tSwap = -9, dir = 1, clock = 0, tScroll = .5, tSm = .5, pLast = 0, vel = 0;
+let pendingBurst = null, curK = null, outK = null, tSwap = -9, dir = 1, clock = 0, tScroll = .5, tSm = .5, pLast = 0, vel = 0;
 function show(k, d = 1) {
   if (k === curK || !B[k]) return;
   const first = !curK; outK = curK; curK = k; dir = d; tSwap = clock;
   const info = KEYS.find(x => x.k === k);
   U.uB.value.copy(U.uA.value); U.uA.value.set(info.c); if (first) U.uB.value.set(info.c); U.uMix.value = 0;
-  drawName(info.name);
+  drawName(info.name, info.fn);
   const b = B[k]; b.g.visible = true; b.label.material.userData.uT.value = 0; b.spin.rotation.y = -1.4 * d;
-  burst(info.c);
+  pendingBurst = { c: info.c, at: clock + .32 };
 }
 addEventListener('lux:theater', e => show(e.detail.k, e.detail.dir));
 window.__theater = { progress(p, t) { vel += Math.abs(p - pLast) * 60; pLast = p; tScroll = t; } };
@@ -135,6 +137,7 @@ let running = false, onScreen = false, last = performance.now();
 function frame(now) {
   const raw = Math.min(1.5, (now - last) / 1000), dt = Math.min(.05, raw); last = now; clock += raw;
   const s = clock - tSwap;
+  if (pendingBurst && clock >= pendingBurst.at) { burst(pendingBurst.c); pendingBurst = null; }
   U.uMix.value = Math.min(1, s / .7); U.uTime.value = clock;
   vel *= Math.exp(-dt * 3); U.uDrift.value += dt * (.15 + vel * .4);
   tSm += (tScroll - tSm) * (1 - Math.exp(-dt * 6));

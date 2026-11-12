@@ -554,3 +554,21 @@ section.real{background:linear-gradient(180deg,#F1F8E4,#fff)}
 .t-ic{width:124px;height:124px;border-radius:28px}.t-ic svg{width:88px;height:88px}
 .fb-tiles.n4 .t-ic{width:108px;height:108px}.fb-tiles.n4 .t-ic svg{width:76px;height:76px}
 @media (max-width:900px){.t-ic,.fb-tiles.n4 .t-ic{width:76px;height:76px;border-radius:18px}.t-ic svg,.fb-tiles.n4 .t-ic svg{width:52px;height:52px}}
+
+/* ===== ROUND 6: their product copy in the theater ===== */
+.th-info h3{margin:10px 0 10px}
+.th-tag{font:italic 900 clamp(17px,1.4vw,22px)/1.15 var(--display);font-stretch:112%;text-transform:uppercase;color:var(--ink);margin-bottom:12px}
+.th-tag::before{content:"";display:inline-block;width:.9em;height:.32em;margin-right:.4em;vertical-align:.18em;background:var(--c);transform:skewX(-24deg)}
+.th-d{font-size:clamp(14.5px,1.05vw,16.5px);line-height:1.55;max-width:50ch}
+.th-love{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:16px}
+.th-love li{position:relative;padding-left:28px;font-size:14px;line-height:1.4;color:var(--text)}
+.th-love li::before{content:"✓";position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-size:11px;font-weight:800}
+.th-info dl{grid-template-columns:1fr 1fr;margin:18px 0 20px}
+.th-info dl .th-how{grid-column:1/-1;border-left:0!important;padding-left:0!important;border-top:1px solid var(--line2)}
+.th-info dd{font-size:14.5px}
+@media (max-width:900px){
+  .th-pin{grid-template-rows:auto 36% auto}
+  .th-d,.th-info dl .th-how{display:none}
+  .th-love{margin-top:6px;gap:4px}.th-love li{font-size:12.5px}
+  .th-tag{font-size:15px;margin-bottom:6px}
+}

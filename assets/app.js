@@ -22,6 +22,89 @@
     { k: 'xfresh', g: 'golf', a: 'X', b: 'Fresh', fn: 'Golf cart interior cleaner', price: 19.99, v: 59846406013009, c: '#d9d27a', per: 'Seats, dash & floor', d: 'Seats, dash and floor, without the slick finish.' },
   ];
   const prod = k => P.find(x => x.k === k);
+  /* their own product copy, verbatim from lusterluxauto.com product pages (tagline, first line, how-to, why you’ll love it) */
+  const COPY = {
+    "luxfoam": {
+      "tag": "Thick foam. Brilliant shine. Every wash.",
+      "desc": "LuxFoam is a foam soap engineered to produce rich, clinging foam that safely lifts dirt, road grime, and contaminants from your vehicle's surface while helping reduce the risk of swirl marks and scratches.",
+      "how": "Foam, wash, rinse, and reveal a clean, glossy finish that's ready for your next adventure",
+      "love": [
+        "Produces thick, rich foam for maximum cleaning power",
+        "Formula that's safe for regular maintenance washes",
+        "High-lubricity formula helps minimize swirl marks and scratches"
+      ]
+    },
+    "luxpro": {
+      "tag": "Skip the Hose. Keep the Showroom Shine.",
+      "desc": "LuxPro is a premium NanoFusion Surface Coating engineered to safely remove light dust, fingerprints, pollen, and road film while enhancing gloss and leaving behind a slick, protective finish.",
+      "how": "Spray, wipe, and reveal a deep, streak-free shine anywhere",
+      "love": [
+        "Encapsulates light dirt before wiping",
+        "Enhances gloss and color depth",
+        "Leaves behind an ultra-slick protective layer"
+      ]
+    },
+    "luxquick": {
+      "tag": "Refresh your shine in seconds.",
+      "desc": "LuxQuick is a premium quick detail spray engineered to safely remove light dust, fingerprints, smudges, and fresh water spots while enhancing gloss and restoring that just-detailed finish.",
+      "how": "Spray, wipe, and buff to reveal a clean, smooth surface that looks freshly detailed",
+      "love": [
+        "Safely removes light dust, fingerprints, and smudges",
+        "Eliminates fresh water spots and light surface contaminants",
+        "Instantly boosts gloss and paint depth"
+      ]
+    },
+    "ceramicx": {
+      "tag": "Instant protection. Lasting shine.",
+      "desc": "CeramicX is a premium ceramic spray engineered to deliver long-lasting protection, incredible gloss, and extreme hydrophobic performance in just minutes.",
+      "how": "Spray, spread evenly with a Edgeless Lux microfiber towel, and buff to reveal a smooth, protected surface with outstanding water beading",
+      "love": [
+        "Creates a durable layer of ceramic protection",
+        "Produces intense gloss and enhanced paint depth",
+        "Hydrophobic formula repels water, dirt, and road grime"
+      ]
+    },
+    "wheelassassin": {
+      "tag": "Attack brake dust. Leave behind brilliance.",
+      "desc": "LuxWheelAssassin is a premium wheel cleaner engineered to break down stubborn brake dust, road grime, grease, and everyday buildup without damaging your wheels.",
+      "how": "Spray, allow the formula to work, agitate with a wheel brush if needed, and rinse away years of built-up grime to reveal brilliantly clean wheels",
+      "love": [
+        "Powerful formula removes stubborn brake dust and road grime",
+        "Cuts through grease, dirt, and built-up contaminants with ease",
+        "Fast-acting formula helps reduce scrubbing time"
+      ]
+    },
+    "tirevenom": {
+      "tag": "Deep, rich tires. Long-lasting protection.",
+      "desc": "TireVenom is a premium tire dressing engineered to restore faded tires with a deep, rich finish while providing long-lasting protection against fading, cracking, and harmful UV exposure.",
+      "how": "Apply with a premium applicator pad and enjoy tires that look cleaner, darker, and protected mile after mile",
+      "love": [
+        "Restores faded tires with a deep, rich finish",
+        "No greasy residue or messy application",
+        "No-sling formula helps keep product off your paint"
+      ]
+    },
+    "interiorx": {
+      "tag": "A cleaner interior starts here.",
+      "desc": "InteriorX is a premium interior cleaner engineered to safely remove dirt, dust, fingerprints, spills, and everyday grime from your vehicle's interior while leaving behind a clean, factory-fresh finish.",
+      "how": "Spray, wipe, and enjoy a clean, refreshed interior that looks and feels like new",
+      "love": [
+        "Safely removes dirt, dust, fingerprints, spills, and everyday grime",
+        "Leaves behind a clean, natural factory finish with no greasy residue",
+        "Helps restore the appearance of interior plastics, vinyl, and trim"
+      ]
+    },
+    "restorx": {
+      "tag": "Restore the finish. Protect it for longer.",
+      "desc": "RestorX is a premium rubber, vinyl, and plastic dressing engineered to restore faded surfaces while leaving behind a rich, factory-new finish without the greasy residue.",
+      "how": "Apply with a premium applicator pad, allow the product to level, and enjoy a deep, even finish that won't leave your surfaces feeling oily or attract excessive dust",
+      "love": [
+        "Restores faded rubber, vinyl, and plastic surfaces",
+        "Leaves a rich, factory-new finish without a greasy feel",
+        "Helps protect against UV rays, fading, cracking, and discoloration"
+      ]
+    }
+  };
 
 
   /* ================= HERO: the card follows the carousel ================= */
@@ -32,7 +115,7 @@
     hcard.style.setProperty('--c', p.c);
     hcBody.classList.remove('in'); void hcBody.offsetWidth;
     hcBody.innerHTML = `<p class="hc-fn">${p.fn}</p><h3 class="hc-name">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
-      <p class="hc-d">${p.d}</p>
+      <p class="hc-d">${(COPY[k] || {}).tag || p.d}</p>
       <div class="hc-buy"><b>${money(p.price)}</b><span>${p.per}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a></div>`;
     hcBody.classList.add('in');
     hcBar.style.animation = 'none'; void hcBar.offsetWidth; hcBar.style.animation = `hcbar ${hold}s linear forwards`;
@@ -51,12 +134,14 @@
   th.style.setProperty('--n', TH.length);
   $('#thTot').textContent = String(TH.length).padStart(2, '0');
   thRail.innerHTML = TH.map((p, i) => `<li><button type="button" data-i="${i}" style="--c:${p.c}"><i></i><span>${p.a}${p.b}</span></button></li>`).join('');
-  const info = p => `
+  const info = p => { const c = COPY[p.k] || {}; return `
     <p class="th-fn">${p.fn}</p>
     <h3 style="--len:${(p.a + p.b).length}">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
-    <p class="th-d">${p.d}</p>
-    <dl><div><dt>Per bottle</dt><dd>${p.per}</dd></div><div><dt>${p.s2[0]}</dt><dd>${p.s2[1]}</dd></div></dl>
-    <div class="th-buy"><b>${money(p.price)}</b><a class="btn solid" href="${cartURL(p.v)}">Add to cart</a><a class="th-more" href="#p-${p.k}">Details</a></div>`;
+    ${c.tag ? `<p class="th-tag">${c.tag}</p>` : ''}
+    <p class="th-d">${c.desc || p.d}</p>
+    ${c.love ? `<ul class="th-love">${c.love.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
+    <dl><div><dt>Per bottle</dt><dd>${p.per}</dd></div><div><dt>${p.s2[0]}</dt><dd>${p.s2[1]}</dd></div>${c.how ? `<div class="th-how"><dt>How to use</dt><dd>${c.how}.</dd></div>` : ''}</dl>
+    <div class="th-buy"><b>${money(p.price)}</b><a class="btn solid" href="${cartURL(p.v)}">Add to cart</a><a class="th-more" href="#p-${p.k}">Details</a></div>`; };
   let thCur = -1;
   const thSet = i => {
     if (i === thCur) return;
@@ -83,7 +168,7 @@
     const pin = $('.th-pin', th).offsetHeight, top = th.getBoundingClientRect().top + scrollY;
     scrollTo({ top: top + (th.offsetHeight - pin) * ((+b.dataset.i + .5) / TH.length), behavior: 'smooth' });
   });
-  window.__thKeys = TH.map(p => ({ k: p.k, c: p.c, name: (p.a + p.b).toUpperCase() }));
+  window.__thKeys = TH.map(p => ({ k: p.k, c: p.c, name: (p.a + p.b).toUpperCase(), fn: p.fn }));
   thSet(0);
 
   /* ================= shop all grid ================= */
