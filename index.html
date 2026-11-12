@@ -2,350 +2,191 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>LusterLux Detailing Products | Waterless Wash, Ceramic &amp; Wheel Care, Born in Arizona</title>
-<meta name="description" content="Detailing products built by two Arizona founders and tested in 115° heat. LuxPro waterless wash, CeramicX, LuxFoam, WheelAssassin and more. 30-day money-back guarantee." />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="robots" content="noindex" />
-<meta name="theme-color" content="#060706" />
+<title>LusterLux Detailing Products</title>
+<meta name="description" content="Detailing products built by two Arizona detailers. Foam soap, waterless wash, ceramic spray, wheel, tire and interior care." />
 <link rel="icon" href="assets/img/brand/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="preload" as="image" href="assets/story/poster-d.jpg" />
-<script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="assets/site.css?v=12" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Cinzel:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css?v=1" />
+<script>document.documentElement.classList.add('js')</script>
+<script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
 </head>
 <body>
 
-<!-- once-per-session badge intro -->
-<div class="intro" id="intro" aria-hidden="true">
-  <div class="intro-badge">
-    <img src="assets/img/brand/badge.webp" alt="" width="320" height="320" />
-    <i class="intro-sheen"></i>
-  </div>
-  <p class="intro-tag">Detailing products <b>&middot;</b> Born in the Arizona desert</p>
-</div>
+<p class="bar"><span>Free shipping on orders $35+</span><i></i><span>30-day money-back guarantee</span><i class="x"></i><span class="x">Made in the USA</span></p>
 
-<a class="skip" href="#main">Skip to content</a>
+<nav class="nav" id="nav">
+  <a class="logo" href="#top" aria-label="LusterLux home"><img src="assets/img/brand/badge.webp" alt="" width="46" height="46" /><span class="wm"><b>LUSTER</b><i>LUX</i></span></a>
+  <ul>
+    <li><a href="#line">Shop</a></li>
+    <li><a href="#kits">Kits</a></li>
+    <li><a href="#real">On real cars</a></li>
+    <li><a href="#story">Our story</a></li>
+  </ul>
+  <a class="cart" href="https://lusterluxauto.com/cart"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h2l1.6 8.2a1 1 0 0 0 1 .8h7.6a1 1 0 0 0 1-.8L17.5 7H6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="16" r="1.2"/><circle cx="14.5" cy="16" r="1.2"/></svg>Cart</a>
+</nav>
 
-<header class="nav" id="nav">
-  <div class="nav-in">
-    <a class="logo" href="#bay" aria-label="LusterLux home">
-      <img src="assets/img/brand/badge-180.png" alt="" width="48" height="48" />
-      <span class="wm">LUSTER<b>LUX</b></span>
-    </a>
-    <nav class="links" aria-label="Primary">
-      <a href="#line">The collection</a>
-      <a href="#luxpro">Waterless wash</a>
-      <a href="#kit">Systems</a>
-      <a href="#story">Our story</a>
-      <a href="#reviews">Reviews</a>
-    </nav>
-    <button class="cart-btn" type="button" data-cart-open aria-label="Open cart">
-      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1.2 12.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8Z"/><path d="M9 7V5.6A3 3 0 0 1 12 2.6a3 3 0 0 1 3 3V7"/></svg>
-      <b class="cart-n" id="cartN" hidden>0</b>
-    </button>
+<!-- HERO: slide 1 is the formula (molecules → bottle → the lineup, live 3D);
+     slides 2–3 are covers built from LusterLux's own photos with their real bottles on the floor -->
+<header class="hero" id="top">
+  <section class="slide s-formula is-on" data-i="0" id="stage" aria-label="The LusterLux formula">
+    <canvas id="gl" aria-label="LusterLux molecules condensing into a bottle of LuxPro, then the range lining up beside it"></canvas>
+    <div class="tip" id="tip" role="status"></div>
+    <div class="h-copy">
+      <p class="kick">Detailing products · Arizona</p>
+      <h1>Engineered shine, <em>down to the molecule.</em></h1>
+      <p class="lede">Eight formulas built and tested by two detailers who washed a rental fleet every day for four years. Foam to tire shine, one line.</p>
+      <div class="ctas">
+        <a class="btn solid" href="#line">Shop the line</a>
+        <a class="btn ghost" href="#kits">Build a kit</a>
+      </div>
+      <p class="hint">Hover a bottle to meet it</p>
+    </div>
+  </section>
+
+  <section class="slide s-cover" data-i="1" aria-label="Wheels and tires">
+    <div class="c-copy">
+      <p class="kick">Wheels &amp; tires</p>
+      <h2>Brake dust doesn't <em>stand a chance.</em></h2>
+      <ul class="c-list">
+        <li><img src="assets/img/bottles/wheelassassin-sm.webp" alt="" /><div><b>WheelAssassin</b><span>Wheel cleaner · 12–20 vehicles</span></div><em>$17.99</em><a class="btn solid sm" href="https://lusterluxauto.com/cart/59846363152465:1">Add</a></li>
+        <li><img src="assets/img/bottles/tirevenom-sm.webp" alt="" /><div><b>TireVenom</b><span>Tire dressing · up to 3 months</span></div><em>$22.99</em><a class="btn solid sm" href="https://lusterluxauto.com/cart/59846342475857:1">Add</a></li>
+        <li><img src="assets/img/bottles/luxpro-sm.webp" alt="" /><div><b>LuxPro</b><span>Waterless wash &amp; protectant</span></div><em>$19.99</em><a class="btn solid sm" href="https://lusterluxauto.com/cart/59846340902993:1">Add</a></li>
+      </ul>
+    </div>
+    <figure class="c-photo"><img src="assets/hero/cover-wheels.webp" alt="LuxPro, TireVenom and WheelAssassin on a speckled shop floor beside a black multi-spoke wheel" /></figure>
+  </section>
+
+  <section class="slide s-cover" data-i="2" aria-label="Finish and protect">
+    <div class="c-copy">
+      <p class="kick">Finish &amp; protect</p>
+      <h2>Deep gloss. <em>Dark tires.</em></h2>
+      <ul class="c-list">
+        <li><img src="assets/img/bottles/ceramicx-sm.webp" alt="" /><div><b>CeramicX</b><span>Ceramic detail spray · up to 8 months</span></div><em>$27.99</em><a class="btn solid sm" href="https://lusterluxauto.com/cart/59846341853265:1">Add</a></li>
+        <li><img src="assets/img/bottles/tirevenom-sm.webp" alt="" /><div><b>TireVenom</b><span>No-sling tire dressing</span></div><em>$22.99</em><a class="btn solid sm" href="https://lusterluxauto.com/cart/59846342475857:1">Add</a></li>
+      </ul>
+    </div>
+    <figure class="c-photo"><img src="assets/hero/cover-paint.webp" alt="TireVenom and CeramicX on the floor beside a bronze mesh wheel" loading="lazy" /></figure>
+  </section>
+
+  <div class="slides-nav" id="snav" role="tablist" aria-label="Hero slides">
+    <button type="button" role="tab" aria-selected="true" data-i="0"><span>01</span>The formula<i></i></button>
+    <button type="button" role="tab" aria-selected="false" data-i="1"><span>02</span>Wheels &amp; tires<i></i></button>
+    <button type="button" role="tab" aria-selected="false" data-i="2"><span>03</span>Finish &amp; protect<i></i></button>
   </div>
 </header>
 
-<main id="main">
-
-<!-- ============ HERO: the bay, a self-playing detail film ============ -->
-<section class="bay" id="bay" data-v="?v=21" data-ch="0" data-chapters="0,11.04,21.08,29.2">
-  <div class="st-pin" id="top">
-    <video class="st-vid" muted playsinline preload="auto" poster="assets/story/poster-d.jpg" aria-label="A dusty white McLaren 720S Spider is foamed with the LuxCannon, rinsed and finished in the LusterLux shop"></video>
-    <i class="st-shade" aria-hidden="true"></i>
-
-    <div class="st-chs">
-      <div class="ch" data-c="0">
-        <p class="ch-n">01 <b>·</b> Foam</p>
-        <h1 class="big">Rolled in <span class="glow">dirty.</span></h1>
-        <p class="ch-sub">Desert dust, baked on. First on the paint: LuxFoam through the LuxCannon. Thick foam clings and lifts the grit before anything touches it.</p>
-      </div>
-      <div class="ch" data-c="1">
-        <p class="ch-n">02 <b>·</b> Rinse</p>
-        <h2 class="big">Then <span class="glow">rinse.</span></h2>
-        <p class="ch-sub">A pressure rinse sheets the foam off and takes the dirt with it.</p>
-      </div>
-      <div class="ch" data-c="2">
-        <p class="ch-n">03 <b>·</b> Dry</p>
-        <h2 class="big">Then <span class="glow">dry.</span></h2>
-        <p class="ch-sub">The last beads roll off, the puddles go, and the gloss comes up clean.</p>
-      </div>
-      <div class="ch" data-c="3">
-        <p class="ch-n">04 <b>·</b> Done</p>
-        <h2 class="big">Now it's <span class="glow">finished.</span></h2>
-        <p class="ch-sub">Foam, rinse, finish. Tell us what you drive and we'll build your shelf.</p>
-        <div class="ch-ctas">
-          <button class="btn btn-lime" type="button" data-kit-open><span>Build my kit</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-          <a class="btn btn-metal" href="#line"><span>Shop the line</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- the bottle doing the work in each chapter -->
-    <div class="st-prods">
-      <div class="pc" data-c="0" style="--liq:#6a4cf0">
-        <img class="pc-b" src="assets/img/bottles/luxfoam.webp" alt="LuxFoam bottle" />
-        <div class="pc-t"><small>On the paint</small><b>LuxFoam</b><em>Foam soap</em><p>Thick foam that clings and lifts the grit before anything touches the paint.</p>
-          <button class="pc-add" type="button" data-add="luxfoam"><span>$19.99</span><i>Add</i></button></div>
-      </div>
-    </div>
-
-    <div class="st-pill" role="group" aria-label="Quick kit builder">
-      <button type="button" data-kit-open><small>Ride</small><b id="pillRide">Car</b></button>
-      <button type="button" data-kit-open><small>Jobs</small><b id="pillJobs">Wash · Protect</b></button>
-      <button type="button" class="st-pill-go" data-kit-open>Build my kit</button>
-    </div>
-    <div class="st-ctl">
-      <button class="st-play" type="button" data-s="play" aria-label="Play the film"><i></i></button>
-      <div class="st-rail" role="group" aria-label="Chapters">
-        <button type="button"><span>Foam</span></button><button type="button"><span>Rinse</span></button><button type="button"><span>Dry</span></button><button type="button"><span>Done</span></button>
-      </div>
-    </div>
-  </div>
+<section class="trust" aria-label="Why LusterLux">
+  <p><b>5.00★</b><span>from 20 reviews</span></p>
+  <p><b>$35+</b><span>ships free</span></p>
+  <p><b>30 days</b><span>money-back guarantee</span></p>
+  <p><b>USA</b><span>proudly made here</span></p>
 </section>
 
-<!-- ============ THE LINE ============ -->
+<section class="jobs" aria-label="Shop by job">
+  <div class="sec-head"><p class="kick">Start here</p><h2>What are you <em>cleaning?</em></h2></div>
+  <div class="job-grid" id="jobs"></div>
+</section>
+
 <section class="line" id="line">
-  <div class="wrap">
-    <header class="head row">
-      <div>
-        <p class="kick"><i></i>The collection</p>
-        <h2><span class="chrome">Every bottle</span> <span class="lime">has one job.</span></h2>
-      </div>
-      <p class="lede">The same bottles you just watched, in the order you use them, each with the steps from its own label.</p>
-    </header>
-    <div class="col-tabs" role="tablist" aria-label="Filter the collection">
-      <button type="button" role="tab" data-g="all" aria-selected="true">All</button>
-      <button type="button" role="tab" data-g="wash" aria-selected="false">Wash</button>
-      <button type="button" role="tab" data-g="paint" aria-selected="false">Paint</button>
-      <button type="button" role="tab" data-g="wheels" aria-selected="false">Wheels &amp; tires</button>
-      <button type="button" role="tab" data-g="interior" aria-selected="false">Interior</button>
-    </div>
-    <div class="col-grid" id="colGrid"></div>
-  </div>
-</section>
-
-<!-- ============ LUXPRO: 0 gallons ============ -->
-<section class="luxpro" id="luxpro" style="--liq:#e84bc4">
-  <div class="wrap lp-grid">
-    <figure class="vf">
-      <img src="assets/img/photo/luxpro-shop.webp" alt="LuxPro waterless wash standing on a McLaren's rear deck in the LusterLux shop" loading="lazy" decoding="async" />
-      <i class="vf-c tl"></i><i class="vf-c tr"></i><i class="vf-c bl"></i><i class="vf-c br"></i>
-      <figcaption class="vf-tag">LuxPro on the 720S</figcaption>
-    </figure>
-    <div class="lp-copy">
-      <p class="kick"><i></i>The waterless wash</p>
-      <p class="gal"><span class="gal-n" id="galN">0</span><span class="gal-u">gallons<br />of water needed</span></p>
-      <h2><span class="chrome">Skip the hose.</span> <span class="lime">Keep the shine.</span></h2>
-      <p class="lede">Built for Arizona dust, water restrictions and HOA no-hose rules. Spray, wipe, buff, and leave protection behind.</p>
-      <div class="plate">
-        <div class="pl-row pl-head"><span></span><b>Hose wash</b><b class="lp">LuxPro</b></div>
-        <div class="pl-row"><span>Water needed</span><b>Buckets + hose</b><b class="lp">None</b></div>
-        <div class="pl-row"><span>OK under HOA no-hose rules</span><b class="no">No</b><b class="lp yes">Yes</b></div>
-        <div class="pl-row"><span>Works in a garage or parking spot</span><b class="no">No</b><b class="lp yes">Yes</b></div>
-        <div class="pl-row"><span>Hard-water spots in AZ sun</span><b>Common</b><b class="lp">No rinse, no spots</b></div>
-        <div class="pl-row"><span>Leaves protection behind</span><b class="no">No</b><b class="lp yes">Yes</b></div>
-        <div class="pl-row"><span>Safe on paint, PPF, wraps &amp; ceramic</span><b>Depends on soap</b><b class="lp yes">Yes</b></div>
-        <div class="pl-row"><span>The process</span><b>Soap, rinse, dry</b><b class="lp">Spray, wipe, buff</b></div>
-      </div>
-      <div class="ctas">
-        <button class="btn btn-lime" type="button" data-add="luxpro"><span>Add LuxPro · $19.99</span></button>
-        <p class="fine">Caked-on mud? Rinse first. LuxPro is made for dust, light dirt and keeping your car clean between washes.</p>
-      </div>
+  <div class="sec-head row">
+    <div><p class="kick">The line</p><h2>Every formula, <em>in the order you use it.</em></h2></div>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Filter products">
+      <button type="button" role="tab" aria-selected="true" data-f="all">All</button>
+      <button type="button" role="tab" aria-selected="false" data-f="wash">Wash</button>
+      <button type="button" role="tab" aria-selected="false" data-f="paint">Paint</button>
+      <button type="button" role="tab" aria-selected="false" data-f="wheel">Wheels &amp; tires</button>
+      <button type="button" role="tab" aria-selected="false" data-f="int">Interior</button>
+      <button type="button" role="tab" aria-selected="false" data-f="golf">Golf cart</button>
     </div>
   </div>
+  <div class="grid" id="grid"></div>
 </section>
 
-<!-- ============ THE SYSTEMS ============ -->
-<section class="sys" id="kit">
-  <div class="wrap">
-    <header class="head row">
-      <div>
-        <p class="kick"><i></i>The systems</p>
-        <h2><span class="chrome">The film,</span> <span class="lime">in a box.</span></h2>
-      </div>
-      <p class="lede">Every step you watched, packed the way they use it in the shop: the bottles, the brushes and the towels that go with them.</p>
-    </header>
-
-    <article class="sx-flag">
-      <figure class="sx-flag-fig"><img src="assets/img/kits/platinum.webp" alt="The Platinum System: foam cannon, bucket, every LusterLux bottle, brushes, mitt and towels" loading="lazy" decoding="async" /></figure>
-      <div class="sx-flag-copy">
-        <p class="sx-tag">The flagship</p>
-        <h3 class="sx-name">The Platinum System</h3>
-        <p class="sx-txt">Every formula, brush and towel they make, in one delivery. The whole shop, ready for your garage.</p>
-        <dl class="sx-groups">
-          <div><dt>Wash &amp; paint</dt><dd>4× LuxFoam, 3× LuxPro, 2× LuxQuick, LuxCannon, bucket, wash mitt, drying towel</dd></div>
-          <div><dt>Wheels &amp; tires</dt><dd>3× WheelAssassin, TireVenom, wheel brush, tire brush</dd></div>
-          <div><dt>Interior</dt><dd>3× InteriorX, RestorX, MicroLux towels, detailing brush</dd></div>
-          <div><dt>Extras</dt><dd>Edgeless towels, XPad applicators, bug &amp; tar sponge, two air fresheners</dd></div>
-        </dl>
-        <div class="sx-buy"><p class="sx-price">$500<small>Over $700 of product</small></p>
-          <button class="btn btn-lime" type="button" data-add="platinum"><span>Add the Platinum System</span></button></div>
-      </div>
-    </article>
-
-    <div class="sx-grid">
-      <article class="sx">
-        <figure class="sx-fig"><img src="assets/img/kits/foam.webp" alt="Foam Wash System: LuxCannon foam cannon and two LuxFoam bottles" loading="lazy" decoding="async" /></figure>
-        <button class="sx-watch" type="button" data-watch="0"><i></i>In the film · Foam &amp; rinse</button>
-        <h3 class="sx-name">Foam Wash System</h3>
-        <ul class="sx-list"><li>LuxCannon foam cannon</li><li>2× LuxFoam</li></ul>
-        <div class="sx-buy"><p class="sx-price">$79.99</p><button class="sx-add" type="button" data-add="foamsys"><span>Add</span></button></div>
-      </article>
-      <article class="sx">
-        <figure class="sx-fig"><img src="assets/img/kits/paint.webp" alt="Paint Care System: CeramicX, LuxPro, LuxQuick and three microfiber towels" loading="lazy" decoding="async" /></figure>
-        <button class="sx-watch" type="button" data-watch="2"><i></i>In the film · Spots &amp; ceramic</button>
-        <h3 class="sx-name">Paint Care System</h3>
-        <ul class="sx-list"><li>LuxPro · LuxQuick · CeramicX</li><li>3× Edgeless Lux towels</li></ul>
-        <div class="sx-buy"><p class="sx-price">$72.99</p><button class="sx-add" type="button" data-add="paintsys"><span>Add</span></button></div>
-      </article>
-      <article class="sx">
-        <figure class="sx-fig"><img src="assets/img/kits/rimtire.webp" alt="Rim and Tire System: TireVenom, WheelAssassin, wheel brush, tire brush and two applicator pads" loading="lazy" decoding="async" /></figure>
-        <button class="sx-watch" type="button" data-watch="4"><i></i>In the film · Wheels &amp; tires</button>
-        <h3 class="sx-name">Rim &amp; Tire System</h3>
-        <ul class="sx-list"><li>WheelAssassin · TireVenom</li><li>Wheel brush, tire brush, 2× XPad</li></ul>
-        <div class="sx-buy"><p class="sx-price">$85.99</p><button class="sx-add" type="button" data-add="rimsys"><span>Add</span></button></div>
-      </article>
-      <article class="sx sx-start">
-        <figure class="sx-fig"><img src="assets/img/kits/essentials.webp" alt="Essentials Kit: TireVenom, LuxPro, InteriorX, towels and an applicator pad" loading="lazy" decoding="async" /></figure>
-        <p class="sx-watch is-tag"><i></i>Start here</p>
-        <h3 class="sx-name">Essentials Kit</h3>
-        <ul class="sx-list"><li>LuxPro · InteriorX · TireVenom</li><li>5 towels, applicator pad</li></ul>
-        <div class="sx-buy"><p class="sx-price">$39.99</p><button class="sx-add" type="button" data-add="kit"><span>Add</span></button></div>
-      </article>
+<section class="shows" aria-label="Featured formulas">
+  <article class="show" style="--c:#ec4fc6">
+    <figure><img src="assets/img/photo/luxpro-hand.webp" alt="LuxPro held up in the shop" loading="lazy" /></figure>
+    <div class="s-info">
+      <p class="kick">Best seller</p>
+      <h3>LUX<em>PRO</em></h3>
+      <p class="fn">Waterless wash &amp; surface protectant</p>
+      <p>Nano-polymers wrap the dust so it lifts off the paint instead of dragging across it. No bucket, no hose, no driveway.</p>
+      <dl><div><dt>Per bottle</dt><dd>15–30 vehicles</dd></div><div><dt>Safe on</dt><dd>PPF, wraps &amp; ceramic</dd></div><div><dt>Size</dt><dd>16 fl oz</dd></div></dl>
+      <a class="btn solid" href="https://lusterluxauto.com/cart/59846340902993:1">Add to cart <b>$19.99</b></a>
     </div>
-    <p class="sx-fine">Free shipping on orders over $35 · 30-day money-back guarantee</p>
-  </div>
+  </article>
+  <article class="show flip" style="--c:#9aa0a6">
+    <figure><img src="assets/img/photo/tirevenom-mesh.webp" alt="TireVenom in front of a bronze mesh wheel" loading="lazy" /></figure>
+    <div class="s-info">
+      <p class="kick">Tire care</p>
+      <h3>TIRE<em>VENOM</em></h3>
+      <p class="fn">No-sling tire dressing</p>
+      <p>Dries to the touch for even, dark sidewalls, and none of it flung down your paint on the first pull-out. Apply with a premium applicator pad.</p>
+      <dl><div><dt>Per bottle</dt><dd>30–50 tires</dd></div><div><dt>Lasts</dt><dd>Up to 3 months</dd></div><div><dt>Size</dt><dd>16 fl oz</dd></div></dl>
+      <a class="btn solid" href="https://lusterluxauto.com/cart/59846342475857:1">Add to cart <b>$22.99</b></a>
+    </div>
+  </article>
+  <article class="show" style="--c:#c8bf3c">
+    <figure><img src="assets/img/photo/interiorx-seat.webp" alt="InteriorX on a leather seat" loading="lazy" /></figure>
+    <div class="s-info">
+      <p class="kick">Interior</p>
+      <h3>INTERIOR<em>X</em></h3>
+      <p class="fn">Interior cleaner</p>
+      <p>Lifts fingerprints, spills and everyday grime off dash, console and door cards, with no slick residue and nothing reflecting in your windshield.</p>
+      <dl><div><dt>Per bottle</dt><dd>15–25 vehicles</dd></div><div><dt>Finish</dt><dd>No slick residue</dd></div><div><dt>Size</dt><dd>16 fl oz</dd></div></dl>
+      <a class="btn solid" href="https://lusterluxauto.com/cart/59846363545681:1">Add to cart <b>$19.99</b></a>
+    </div>
+  </article>
 </section>
 
-<!-- ============ ON THE CARS ============ -->
-<section class="cars" id="cars">
-  <div class="wrap">
-    <header class="head row">
-      <div>
-        <p class="kick"><i></i>On the cars</p>
-        <h2><span class="chrome">Tested on real cars,</span> <span class="lime">in real garages.</span></h2>
-      </div>
-      <p class="lede">Every formula is tried on the cars that walk into the shop, from SF90s to daily drivers.</p>
-    </header>
-  </div>
-  <div class="reels" id="reels">
-    <figure class="reel"><img src="assets/img/photo/interiorx-stradale.webp" alt="InteriorX on the sill of a Ferrari SF90 Stradale" loading="lazy" decoding="async" /><figcaption><b>InteriorX</b>SF90 Stradale sill</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/tirevenom-mesh.webp" alt="TireVenom in front of a bronze mesh wheel" loading="lazy" decoding="async" /><figcaption><b>TireVenom</b>Mesh wheels, no sling</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/luxpro-mclaren.webp" alt="LuxPro held up in front of the McLaren and the graffiti wall" loading="lazy" decoding="async" /><figcaption><b>LuxPro</b>The 720S, before the show</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/towels-carbon.webp" alt="LusterLux microfiber towels boxed on carbon trim" loading="lazy" decoding="async" /><figcaption><b>Towels</b>Edgeless, on carbon</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/interiorx-red.webp" alt="InteriorX in the centre console beside a red start button" loading="lazy" decoding="async" /><figcaption><b>InteriorX</b>Console, no glare</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/luxpro-lambo.webp" alt="LuxPro held in front of a Lamborghini in the shop" loading="lazy" decoding="async" /><figcaption><b>LuxPro</b>Lambo wipe-down</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/tirevenom-gold.webp" alt="TireVenom held beside a gold Lamborghini wheel" loading="lazy" decoding="async" /><figcaption><b>TireVenom</b>Even, dark sidewalls</figcaption></figure>
-    <figure class="reel"><img src="assets/img/photo/towels-engine.webp" alt="LusterLux towels resting on a carbon engine cover" loading="lazy" decoding="async" /><figcaption><b>Towels</b>Engine bay</figcaption></figure>
-  </div>
+<section class="kits" id="kits">
+  <div class="sec-head"><p class="kick">Kits &amp; systems</p><h2>Everything for the job, <em>in one box.</em></h2></div>
+  <div class="kit-grid" id="kitgrid"></div>
 </section>
 
-<!-- ============ STORY ============ -->
+<section class="real" id="real">
+  <div class="sec-head row">
+    <div><p class="kick">On real cars</p><h2>Straight from <em>our shop.</em></h2></div>
+    <a class="btn ghost" href="https://www.tiktok.com/@lusterluxcarcare">@lusterluxcarcare</a>
+  </div>
+  <div class="reel-row" id="reels"></div>
+</section>
+
 <section class="story" id="story">
-  <div class="wrap story-grid">
-    <div class="story-photos">
-      <figure class="sp sp1"><img src="assets/img/photo/founders-2.webp" alt="Chase and Brandon, the LusterLux founders, in the Arizona desert" loading="lazy" decoding="async" /></figure>
-      <figure class="sp sp2"><img src="assets/img/photo/graffiti.webp" alt="LuxPro against the Built Through Sacrifice graffiti wall" loading="lazy" decoding="async" /></figure>
-      <img class="sp-badge" src="assets/img/brand/badge.webp" alt="" aria-hidden="true" />
-    </div>
-    <div class="story-copy">
-      <p class="kick"><i></i>Our story</p>
-      <h2><span class="chrome">Two founders.</span> <span class="lime">Zero head start.</span></h2>
-      <p class="lede">Chase and Brandon started LusterLux at 18 with a passion for cars and no shortcuts. Every formula, label and video is built by them and tested on real cars in the Arizona heat.</p>
-      <ol class="road">
-        <li><b>Started at 18</b><span>An idea, a love for cars, and no guaranteed outcome.</span></li>
-        <li><b>Built from scratch</b><span>Products, packaging, content and events, step by step.</span></li>
-        <li><b>Tested in real life</b><span>On real vehicles, in real garages, at real car shows.</span></li>
-        <li class="now"><b>Just getting started</b><span>New products, bigger events and a growing community.</span></li>
-      </ol>
-      <p class="sig">Chase + Brandon<span>Co-founders, LusterLux</span></p>
-    </div>
+  <figure><img src="assets/img/photo/founders.webp" alt="LusterLux founders Chase Hayes and Brandon Highland between their two white trucks in the Arizona desert" loading="lazy" /></figure>
+  <div class="st-copy">
+    <p class="kick">Our story</p>
+    <h2>Two friends from 7th grade. <em>One line of formulas.</em></h2>
+    <p>Chase and Brandon started LusterLux at 18. Before that came four years of keeping a rental fleet clean, two to ten vehicles a day, in the Arizona sun.</p>
+    <p>Every bottle on this page came out of that work: what lifted the dust without scratching, what held up in the heat, what was worth the shelf space.</p>
+    <a class="btn ghost" href="https://lusterluxauto.com/pages/about">Read the story</a>
   </div>
 </section>
 
-<!-- ============ REVIEWS ============ -->
-<section class="reviews" id="reviews">
-  <div class="wrap">
-    <header class="head row">
-      <div>
-        <p class="kick"><i></i>Customers are saying</p>
-        <h2><span class="chrome">5.00</span> <span class="lime">from 20 reviews.</span></h2>
-      </div>
-      <p class="stars" aria-label="5 out of 5 stars">★★★★★</p>
-    </header>
-  </div>
-  <div class="belt" id="belt"><div class="belt-run" id="beltRun"></div></div>
-</section>
-
-<!-- ============ CLOSE ============ -->
-<section class="close">
-  <img class="close-badge" src="assets/img/brand/badge.webp" alt="" aria-hidden="true" />
-  <div class="wrap">
-    <h2><span class="chrome">The detail isn't finished</span> <span class="lime">until it's LusterLux.</span></h2>
-    <div class="ctas center">
-      <a class="btn btn-lime" href="#line"><span>Shop the line</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <a class="btn btn-metal" href="#kit"><span>Shop the systems</span></a>
-    </div>
-    <ul class="promise">
-      <li><b>30 days</b>Money-back guarantee</li>
-      <li><b>$35+</b>Ships free</li>
-      <li><b>USA</b>Proudly made here</li>
-    </ul>
+<section class="reviews" aria-label="Reviews">
+  <div class="sec-head"><p class="kick">5.00★ from 20 reviews</p><h2>Detailers who <em>cleared the shelf.</em></h2></div>
+  <div class="rv-row">
+    <figure><blockquote>I&rsquo;ve tried them all and have a whole shelf full of different companies and products &mdash; until now. I&rsquo;ve cleared out the shelf and filled it with LusterLux. This stuff works, like actually works.</blockquote><figcaption><b>Dr. Handshoes</b>LuxPro</figcaption></figure>
+    <figure><blockquote>I have been using LusterLux on my black vehicle for months now. It really protects it from water spotting. My car is always shiny and looks like it just rolled off the lot.</blockquote><figcaption><b>Tammy C</b>CeramicX</figcaption></figure>
+    <figure><blockquote>Was skeptical to purchase the RestorX for the interior of my truck but am glad I did. The results exceeded my expectations and the shine has maintained longer than the Armor All I had always used prior.</blockquote><figcaption><b>Hank H</b>RestorX</figcaption></figure>
+    <figure><blockquote>As a busy mom of three, my car is basically a second home &mdash; filled with crumbs, fingerprints, and the chaos of everyday life. I honestly didn&rsquo;t expect much, but LusterLux completely exceeded my expectations.</blockquote><figcaption><b>Bree</b>InteriorX</figcaption></figure>
+    <figure><blockquote>Chase and Brandon are fantastic to work with. Their professionalism, knowledge, and passion for car care really stand out. From their drying towels to tire venom and protectants, they have delivered great results.</blockquote><figcaption><b>Lucas Greenbank</b>LuxTowel</figcaption></figure>
   </div>
 </section>
-
-</main>
 
 <footer class="foot">
-  <div class="wrap foot-grid">
-    <div>
-      <a class="logo" href="#bay"><img src="assets/img/brand/badge-180.png" alt="LusterLux" width="64" height="64" /><span class="wm">LUSTER<b>LUX</b></span></a>
-      <p>Detailing products, born in the Arizona desert.</p>
-    </div>
-    <div><h3>Shop</h3><a href="#line">The collection</a><a href="#luxpro">LuxPro waterless wash</a><a href="#kit">Systems</a></div>
-    <div><h3>LusterLux</h3><a href="#story">Our story</a><a href="#reviews">Reviews</a><a href="mailto:support@lusterluxauto.com">support@lusterluxauto.com</a></div>
+  <div class="f-top">
+    <img src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="84" height="84" />
+    <nav><a href="#line">Shop</a><a href="#kits">Kits</a><a href="#real">On real cars</a><a href="#story">Our story</a><a href="https://lusterluxauto.com/cart">Cart</a></nav>
   </div>
-  <p class="wrap foot-note">A ProofPilot homepage concept for LusterLux. Products, labels and photography are LusterLux's own.</p>
+  <p class="f-meta">Free shipping on $35+ · 30-day money-back guarantee · support@lusterluxauto.com</p>
+  <p class="note">A ProofPilot concept for LusterLux. Products, prices, reviews, photos and videos are LusterLux's. The 3D bottles are built from their studio photos and labels.</p>
 </footer>
 
-<!-- build-your-kit drawer -->
-<aside class="kitdr" id="kitdr" aria-label="Build your kit" aria-hidden="true">
-  <div class="kd-head">
-    <p class="kd-brand"><img src="assets/img/brand/badge-180.png" alt="" width="34" height="34" />LusterLux <b>·</b> Kit builder</p>
-    <button type="button" data-kit-close aria-label="Close">&times;</button>
-  </div>
-  <h2>Build your <span class="glow">kit.</span></h2>
-  <div class="kd-body">
-    <p class="kd-step"><i>1</i>Your ride</p>
-    <div class="kd-rides" id="kdRides"></div>
-    <p class="kd-step"><i>2</i>The work</p>
-    <div class="kd-jobs" id="kdJobs"></div>
-    <p class="kd-step"><i>3</i>Your shelf</p>
-    <div class="kd-shelf" id="kdShelf"></div>
-  </div>
-  <div class="kd-foot">
-    <p class="kd-total"><span id="kdCount">0 bottles</span><b id="kdTotal">$0.00</b></p>
-    <p class="kd-ship" id="kdShip"></p>
-    <button class="btn btn-lime full" type="button" id="kdAdd"><span>Add the kit to cart</span></button>
-  </div>
-</aside>
-
-<!-- cart drawer -->
-<aside class="drawer" id="drawer" aria-label="Cart" aria-hidden="true">
-  <div class="dr-head"><h2>Your cart</h2><button type="button" data-cart-close aria-label="Close cart">&times;</button></div>
-  <div class="dr-body" id="drBody"></div>
-  <div class="dr-foot">
-    <p class="dr-total"><span>Subtotal</span><b id="drTotal">$0.00</b></p>
-    <p class="dr-ship" id="drShip"></p>
-    <a class="btn btn-lime full" id="drCheckout" href="https://lusterluxauto.com/cart"><span>Checkout</span></a>
-  </div>
-</aside>
-<i class="scrim" id="scrim" data-cart-close></i>
-
-<script src="assets/app.js?v=5"></script>
-<script src="assets/story.js?v=11"></script>
+<script src="assets/app.js?v=1" defer></script>
+<script type="module" src="assets/hero3d.js?v=1"></script>
 </body>
 </html>

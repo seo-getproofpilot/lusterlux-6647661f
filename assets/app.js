@@ -1,204 +1,109 @@
-/* LusterLux v2 — hero sequence, the shelf, cart (real Shopify cart permalinks), reveals. */
+/* LusterLux v4: hero slides, shop-by-job, the line, kits, real footage. Every Add is a real Shopify cart permalink. */
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const STORE = 'https://lusterluxauto.com';
-  const money = n => '$' + n.toFixed(2);
-  const KEY = 'll2_cart';
-  let cart = {}; try { cart = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  const cartURL = v => `${STORE}/cart/${v}:1`;
 
-  /* ---------- catalog: titles, prices and variant ids from their live products.json ---------- */
-  const P = {
-    luxpro:   { n: 'LuxPro', em: 'Pro', fn: 'Waterless wash & surface protectant', price: 19.99, v: 59846340902993, liq: '#ec4fc6',
-      txt: 'Nano-polymers wrap the dust so it lifts off the paint instead of dragging across it. No bucket, no hose, no driveway.',
-      specs: ['16 oz', '15–30 vehicles per bottle', 'Safe on PPF, wraps & ceramic'], photo: 'luxpro-hand' },
-    ceramicx: { n: 'CeramicX', em: 'X', fn: 'Ceramic detail spray', price: 27.99, v: 59846341853265, liq: '#35b9e6',
-      txt: 'A ceramic layer in the time it takes to wipe a panel. Hard water beading, real gloss depth, and a surface that stays clean longer.',
-      specs: ['16 oz', '10–20 vehicles per bottle', 'Up to 8 months of protection'] },
-    luxfoam:  { n: 'LuxFoam', em: 'Foam', fn: 'Foam soap', price: 19.99, v: 59846347259985, liq: '#6a4cf0',
-      txt: 'Thick, clinging foam that lifts the grit before your mitt ever touches the paint, the single biggest thing standing between a wash and a swirl.',
-      specs: ['16 oz', '8–16 washes per bottle', 'Foam cannon or bucket'], photo: 'real-foam' },
-    wheelassassin: { n: 'LuxWheelAssassin', em: 'WheelAssassin', fn: 'Wheel cleaner', price: 17.99, v: 59846363152465, liq: '#d9f21c',
-      txt: 'Fast-acting on bonded brake dust, grease and road film, so the barrel comes clean with a fraction of the scrubbing.',
-      specs: ['16 oz', '12–20 vehicles per bottle'] },
-    tirevenom: { n: 'TireVenom', em: 'Venom', fn: 'Tire dressing', price: 22.99, v: 59846342475857, liq: '#e9ecef',
-      txt: 'A no-sling dressing that dries to the touch. Even, dark sidewalls, and none of it flung down your paint on the first pull-out.',
-      specs: ['16 oz', '30–50 tires per bottle', 'Up to 3 months'], photo: 'tirevenom-hand' },
-    interiorx: { n: 'InteriorX', em: 'X', fn: 'Interior cleaner', price: 19.99, v: 59846363545681, liq: '#e9e59a',
-      txt: 'Lifts fingerprints, spills and everyday grime off dash, console and door cards, then leaves, with no slick residue and nothing reflecting in your windshield.',
-      specs: ['16 oz', '15–25 vehicles per bottle'], photo: 'interiorx-seat' },
-    luxquick: { n: 'LuxQuick', em: 'Quick', fn: 'Detail spray', price: 17.99, v: 59846342246481, liq: '#2fd39a',
-      txt: 'Pulls light dust, fingerprints and fresh water spots, then leaves a slick layer that keeps the next round from sticking.',
-      specs: ['16 oz', '15–25 vehicles per bottle'] },
-    restorx:  { n: 'RestorX', em: 'X', fn: 'RVP plastic dressing', price: 22.99, v: 59846342377553, liq: '#f1e4dc',
-      txt: 'Rubber, vinyl and plastic brought back on trim, dash and engine bay, with an even finish that never feels oily or pulls dust.',
-      specs: ['16 oz', '20–40 vehicles per bottle', 'Up to 8 months'] },
-    birdielux: { n: 'BirdieLux', fn: 'Golf cart washless cleaner', price: 19.99, v: 59846406373457, liq: '#7fd3ff' },
-    xfresh:   { n: 'XFresh', fn: 'Golf cart interior cleaner', price: 19.99, v: 59846406013009, liq: '#9be36a' },
-    kit:      { n: 'Essentials Kit', fn: 'LuxPro + InteriorX + TireVenom', price: 39.99, v: 62697809150033, pic: 'assets/img/kits/essentials.webp' },
-    foamsys:  { n: 'Foam Wash System', fn: 'LuxCannon + 2× LuxFoam', price: 79.99, v: 59835928772689, pic: 'assets/img/kits/foam.webp' },
-    paintsys: { n: 'Paint Care System', fn: 'LuxPro, LuxQuick, CeramicX + towels', price: 72.99, v: 59835922219089, pic: 'assets/img/kits/paint.webp' },
-    rimsys:   { n: 'Rim & Tire System', fn: 'WheelAssassin, TireVenom, brushes + pads', price: 85.99, v: 59835924316241, pic: 'assets/img/kits/rimtire.webp' },
-    platinum: { n: 'The Platinum System', fn: 'Every formula, brush and towel', price: 500, v: 59889398513745, pic: 'assets/img/kits/platinum.webp' },
+  /* catalog: titles, prices, variant ids and coverage from their live products.json */
+  const P = [
+    { k: 'luxfoam', g: 'wash', a: 'Lux', b: 'Foam', fn: 'Foam soap', price: 19.99, v: 59846347259985, c: '#6a4cf0', sp: '8–16 washes per bottle. Foam cannon or bucket.' },
+    { k: 'luxpro', g: 'wash paint', a: 'Lux', b: 'Pro', fn: 'Waterless wash & protectant', price: 19.99, v: 59846340902993, c: '#ec4fc6', sp: '15–30 vehicles per bottle. Safe on PPF, wraps & ceramic.' },
+    { k: 'luxquick', g: 'paint', a: 'Lux', b: 'Quick', fn: 'Detail spray', price: 17.99, v: 59846342246481, c: '#2fd39a', sp: '15–25 vehicles per bottle. Dust, prints & fresh water spots.' },
+    { k: 'ceramicx', g: 'paint', a: 'Ceramic', b: 'X', fn: 'Ceramic detail spray', price: 27.99, v: 59846341853265, c: '#35b9e6', sp: '10–20 vehicles per bottle. Up to 8 months of protection.' },
+    { k: 'wheelassassin', g: 'wheel', a: 'Wheel', b: 'Assassin', fn: 'Wheel cleaner', price: 17.99, v: 59846363152465, c: '#c9e01c', sp: '12–20 vehicles per bottle. Brake dust, grease & road film.' },
+    { k: 'tirevenom', g: 'wheel', a: 'Tire', b: 'Venom', fn: 'Tire dressing', price: 22.99, v: 59846342475857, c: '#b9bec4', sp: '30–50 tires per bottle. Up to 3 months, no sling.' },
+    { k: 'interiorx', g: 'int', a: 'Interior', b: 'X', fn: 'Interior cleaner', price: 19.99, v: 59846363545681, c: '#d9d27a', sp: '15–25 vehicles per bottle. No slick residue.' },
+    { k: 'restorx', g: 'int', a: 'Restor', b: 'X', fn: 'RVP plastic dressing', price: 22.99, v: 59846342377553, c: '#e3d3c6', sp: '20–40 vehicles per bottle. Up to 8 months.' },
+    { k: 'birdielux', g: 'golf', a: 'Birdie', b: 'Lux', fn: 'Golf cart washless cleaner', price: 19.99, v: 59846406373457, c: '#7f86ff', sp: 'Washless clean for the body, seats and roof.' },
+    { k: 'xfresh', g: 'golf', a: 'X', b: 'Fresh', fn: 'Golf cart interior cleaner', price: 19.99, v: 59846406013009, c: '#d9d27a', sp: 'Seats, dash and floor, without the slick finish.' },
+  ];
+
+  /* ---------- the line ---------- */
+  const grid = $('#grid');
+  grid.innerHTML = P.map(p => `
+    <article class="card" id="p-${p.k}" data-g="${p.g}" style="--c:${p.c}">
+      <i class="dot"></i>
+      <figure><img src="assets/img/bottles/${p.k}.webp" alt="${p.a}${p.b} ${p.fn}" loading="lazy" decoding="async" /></figure>
+      <h3 class="nm">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
+      <p class="fn">${p.fn}</p>
+      <p class="sp">${p.sp}</p>
+      <div class="buy"><span class="pr">$${p.price.toFixed(2)}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a></div>
+    </article>`).join('');
+  const tabs = $('#tabs');
+  const filter = f => {
+    for (const t of tabs.children) t.setAttribute('aria-selected', t.dataset.f === f);
+    for (const c of grid.children) c.hidden = f !== 'all' && !c.dataset.g.split(' ').includes(f);
   };
-  const imgOf = k => P[k].pic || 'assets/img/bottles/' + (P[k].img || k) + '-sm.webp';
-  const nameHTML = p => p.em && p.n.endsWith(p.em) ? p.n.slice(0, -p.em.length).toUpperCase() + '<em>' + p.em.toUpperCase() + '</em>' : p.n.toUpperCase();
-
-  /* ---------- intro: once per session, ?nointro skips ---------- */
-  const intro = $('#intro');
-  let seen = false; try { seen = sessionStorage.getItem('ll2_intro') === '1'; } catch (e) {}
-  if (seen || /nointro/.test(location.search)) document.documentElement.classList.add('no-intro');
-  else { try { sessionStorage.setItem('ll2_intro', '1'); } catch (e) {} setTimeout(() => intro && intro.remove(), 3400); }
-
-  /* ---------- nav ---------- */
-  const nav = $('#nav');
-  const onScroll = () => nav.classList.toggle('scrolled', scrollY > 30);
-  addEventListener('scroll', onScroll, { passive: true }); onScroll();
-
-  /* ---------- THE COLLECTION: in the order you use them, steps from each label ---------- */
-  const COL = [
-    ['luxfoam', 'wash', ['Fill the LuxCannon', 'Foam the whole car', 'Rinse'], 0],
-    ['luxpro', 'wash', ['Spray a panel', 'Wipe with a microfiber', 'Flip and buff'], null],
-    ['luxquick', 'paint', ['Spray', 'Wipe', 'Buff'], 2],
-    ['ceramicx', 'paint', ['Spray', 'Spread with an Edgeless Lux towel', 'Buff'], 3],
-    ['wheelassassin', 'wheels', ['Spray', 'Let it work, agitate with a wheel brush', 'Rinse'], 4],
-    ['tirevenom', 'wheels', ['Apply with an applicator pad', 'Wipe onto the sidewall', 'Let it dry'], 5],
-    ['interiorx', 'interior', ['Spray', 'Wipe', 'Done'], null],
-    ['restorx', 'interior', ['Apply with an applicator pad', 'Let it level', 'Done, no oily feel'], null],
-  ];
-  const colGrid = $('#colGrid');
-  colGrid.innerHTML = COL.map(([k, g, how, ch], i) => { const p = P[k]; return `<article class="cc" data-g="${g}" style="--liq:${p.liq}">
-      <div class="cc-stage"><span class="cc-no">${String(i + 1).padStart(2, '0')}</span>
-        <img class="cc-b" src="assets/img/bottles/${k}.webp" alt="${p.n} ${p.fn}" loading="lazy" decoding="async" />
-        <img class="cc-r" src="assets/img/bottles/${k}-sm.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
-      <div class="cc-body"><h3 class="cc-name">${p.n.replace(/^LuxWheel/, 'Wheel')}</h3><p class="cc-fn">${p.fn}</p>
-        <ol class="cc-how">${how.map(h => `<li>${h}</li>`).join('')}</ol>
-        <div class="cc-buy"><span class="cc-price">${money(p.price)}</span><button class="sx-add" type="button" data-add="${k}"><span>Add</span></button></div>
-        ${ch !== null ? `<button class="cc-watch" type="button" data-watch="${ch}"><i></i>Watch it in the film</button>` : ''}</div></article>`; }).join('');
-  const tabs = Array.from(document.querySelectorAll('.col-tabs button'));
-  tabs.forEach(b => b.addEventListener('click', () => {
-    tabs.forEach(x => x.setAttribute('aria-selected', x === b));
-    const g = b.dataset.g;
-    colGrid.querySelectorAll('.cc').forEach(c => { c.hidden = g !== 'all' && c.dataset.g !== g; });
-  }));
-  /* "watch it": jump the hero film to that chapter and play */
-  document.addEventListener('click', e => {
-    const w = e.target.closest('[data-watch]'); if (!w) return;
-    const i = +w.dataset.watch;
-    document.getElementById('bay').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => { if (window.__story && window.__storyCH) window.__story(window.__storyCH[i] + .05, true); }, 450);
-  });
-
-  /* ---------- reviews: verbatim from their Judge.me widget ---------- */
-  const R = [
-    ['Spencer Seaman', 'CeramicX', 'Great shine and water beading'],
-    ['Dr. Handshoes', 'LusterLux', 'This sh*t works, like actually works. The assassin wheel cleaner melted old grime off my wife’s Yukon wheels and tires before I even scrubbed them.'],
-    ['John M.', 'LusterLux', 'Amazing products. LuxPro and LuxFoam are my favorites. Great cleaning power, awesome scents, and professional results.'],
-    ['Spencer Seaman', 'WheelAssassin', 'Got the brake dust off my wheels and they look amazing. Great shine and easy to use.'],
-    ['Tammy C', 'LusterLux', 'I have been using LusterLux on my black vehicle for months now. It really protects it from water spotting.'],
-    ['Hank H', 'RestorX', 'The results exceeded my expectations and the shine has maintained longer than the Armor All I had always used prior.'],
-    ['Jeff C', 'LusterLux', 'The more products I try from this business the more I like them.'],
-    ['Spencer Seaman', 'TireVenom', 'Great product with good shine. No sling'],
-    ['Kay', 'LusterLux', 'Great products, easy to use. Looks like a professional detailed my car!'],
-    ['Zay', 'LusterLux', 'I used the waterless wash and the wheel cleaner. Gave my car a deep shine and wheels looked new again.'],
-  ];
-  const card = r => `<article class="rv"><q>${r[2]}</q><p><span>★★★★★</span>${r[0]}<i>${r[1]}</i></p></article>`;
-  $('#beltRun').innerHTML = R.map(card).join('') + R.map(card).join('');
-
-  /* ---------- 0 gallons counter + reveals ---------- */
-  const galN = $('#galN');
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('in');
-    if (e.target === galN) { let n = 40; const t = setInterval(() => { n = Math.max(0, n - 3); galN.textContent = n; if (!n) clearInterval(t); }, 35); }
-    io.unobserve(e.target);
-  }), { threshold: 0.25 });
-  $$('.head, .vf, .lp-copy, .sx-flag, .story-copy, .story-photos, .close .wrap').forEach(el => { el.classList.add('rv-up'); io.observe(el); });
-  io.observe(galN);
-
-  /* ---------- CART: localStorage, checks out through a Shopify cart permalink ---------- */
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} };
-  const drawer = $('#drawer'), scrim = $('#scrim');
-  function render() {
-    const keys = Object.keys(cart).filter(k => P[k] && cart[k] > 0);
-    const count = keys.reduce((a, k) => a + cart[k], 0);
-    const total = keys.reduce((a, k) => a + cart[k] * P[k].price, 0);
-    const n = $('#cartN'); n.hidden = !count; n.textContent = count;
-    $('#drBody').innerHTML = keys.length ? keys.map(k => `<div class="dr-item"><img src="${imgOf(k)}" alt="" />
-        <div><b>${P[k].n}</b><small>${P[k].fn}</small><div class="qty"><button type="button" data-q="${k}" data-d="-1" aria-label="Remove one">−</button>${cart[k]}<button type="button" data-q="${k}" data-d="1" aria-label="Add one">+</button></div></div>
-        <span>${money(cart[k] * P[k].price)}</span></div>`).join('') : '<p class="dr-empty">Your cart is empty.</p>';
-    $('#drTotal').textContent = money(total);
-    $('#drShip').textContent = !count ? '' : total >= 35 ? 'Your order ships free.' : `${money(35 - total)} more for free shipping.`;
-    $('#drCheckout').href = keys.length ? `${STORE}/cart/${keys.map(k => P[k].v + ':' + cart[k]).join(',')}` : `${STORE}/cart`;
-    syncAdded();
-  }
-  function syncAdded() {
-    $$('[data-add]').forEach(b => {
-      const on = cart[b.dataset.add] > 0;
-      b.classList.toggle('added', on);
-      const s = b.querySelector('em') || b.querySelector('span');
-      if (!s) return;
-      if (!s.dataset.label) s.dataset.label = s.textContent;
-      s.textContent = on ? (b.matches('.chip-add') ? 'Added ✓' : 'Added ✓') : s.dataset.label;
-    });
-  }
-  const scrimOn = () => scrim.classList.add('on'), scrimOff = () => scrim.classList.remove('on');
-  const open = () => { drawer.classList.add('open'); scrimOn(); drawer.setAttribute('aria-hidden', 'false'); };
-  const close = () => { drawer.classList.remove('open'); scrimOff(); drawer.setAttribute('aria-hidden', 'true'); const k = document.getElementById('kitdr'); if (k) { k.classList.remove('open'); k.setAttribute('aria-hidden', 'true'); } };
-  document.addEventListener('click', e => {
-    const a = e.target.closest('[data-add]');
-    if (a) { const k = a.dataset.add; cart[k] = (cart[k] || 0) + 1; save(); render(); open(); return; }
-    const q = e.target.closest('[data-q]');
-    if (q) { const k = q.dataset.q; cart[k] = Math.max(0, (cart[k] || 0) + +q.dataset.d); if (!cart[k]) delete cart[k]; save(); render(); return; }
-    if (e.target.closest('[data-cart-open]')) open();
-    if (e.target.closest('[data-cart-close]')) close();
-  });
-  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-
-  /* ---------- KIT BUILDER: the reference's booking drawer, for a product brand ---------- */
-  const RIDES = [
-    ['car', 'Car', '<path d="M3 15h18M5 15l1.8-4.2A2 2 0 0 1 8.6 9.5h6.8a2 2 0 0 1 1.8 1.3L19 15"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/>'],
-    ['truck', 'Truck', '<path d="M2 15h20M3 15V10h9V7h5l3 4v4"/><circle cx="7" cy="16.5" r="1.6"/><circle cx="17" cy="16.5" r="1.6"/>'],
-    ['golf', 'Golf cart', '<path d="M5 6h14M7 6v9M17 6v9M4 15h16M6 12h12"/><circle cx="7.5" cy="16.8" r="1.4"/><circle cx="16.5" cy="16.8" r="1.4"/>'],
-    ['utv', 'UTV', '<path d="M3 14h18M5 14l2-6h9l3 6M9 8v6"/><circle cx="6.5" cy="16" r="2"/><circle cx="17.5" cy="16" r="2"/>'],
-  ];
+  tabs.addEventListener('click', e => { const b = e.target.closest('button'); if (b) filter(b.dataset.f); });
+  /* ---------- shop by job ---------- */
   const JOBS = [
-    ['wash', 'Wash', 'Foam or waterless, no swirls', { def: ['luxpro', 'luxfoam'], golf: ['birdielux'] }],
-    ['wheels', 'Wheels & tires', 'Brake dust off, sidewalls dark', { def: ['wheelassassin', 'tirevenom'], golf: ['tirevenom'] }],
-    ['interior', 'Interior', 'Dash, console, trim', { def: ['interiorx', 'restorx'], golf: ['xfresh'] }],
-    ['protect', 'Protect', 'Ceramic layer, quick touch-ups', { def: ['ceramicx', 'luxquick'] }],
+    { f: 'wash', h: 'Wash', p: 'Foam it, rinse it, or skip the hose entirely.', b: ['luxpro', 'luxfoam'] },
+    { f: 'paint', h: 'Paint', p: 'Gloss, protection and a slick finish that lasts.', b: ['luxquick', 'ceramicx', 'luxpro'] },
+    { f: 'wheel', h: 'Wheels & tires', p: 'Brake dust off, dark sidewalls on.', b: ['wheelassassin', 'tirevenom'] },
+    { f: 'int', h: 'Interior', p: 'Dash, seats and trim, without the greasy shine.', b: ['restorx', 'interiorx'] },
   ];
-  let ride = 'car', jobs = new Set(['wash', 'protect']);
-  const kitdr = $('#kitdr');
-  function kitItems() {
-    const out = [];
-    JOBS.forEach(j => { if (!jobs.has(j[0])) return; (j[3][ride === 'golf' ? 'golf' : 'def'] || j[3].def).forEach(k => { if (!out.includes(k)) out.push(k); }); });
-    return out;
-  }
-  function paintKit() {
-    $('#kdRides').innerHTML = RIDES.map(r => `<button type="button" class="kd-ride" data-ride="${r[0]}" aria-pressed="${r[0] === ride}"><svg viewBox="0 0 24 24">${r[2]}</svg>${r[1]}</button>`).join('');
-    $('#kdJobs').innerHTML = JOBS.map(j => `<button type="button" class="kd-job" data-job="${j[0]}" aria-pressed="${jobs.has(j[0])}"><span><b>${j[1]}</b>${j[2]}</span><i></i></button>`).join('');
-    const items = kitItems();
-    $('#kdShelf').innerHTML = items.length ? items.map(k => `<div class="kd-b"><img src="assets/img/bottles/${k}-sm.webp" alt="" /><b>${P[k].n}</b><small>${money(P[k].price)}</small></div>`).join('') : '<p class="kd-empty">Pick at least one job.</p>';
-    const total = items.reduce((a, k) => a + P[k].price, 0);
-    $('#kdCount').textContent = items.length + (items.length === 1 ? ' bottle' : ' bottles');
-    $('#kdTotal').textContent = money(total);
-    $('#kdShip').textContent = !items.length ? '' : total >= 35 ? 'Ships free.' : `${money(35 - total)} more for free shipping.`;
-    $('#kdAdd').disabled = !items.length;
-    const rn = RIDES.find(r => r[0] === ride)[1];
-    $('#pillRide').textContent = rn;
-    const jn = JOBS.filter(j => jobs.has(j[0])).map(j => j[1].split(' ')[0]);
-    $('#pillJobs').textContent = jn.length ? (jn.length > 2 ? jn.length + ' jobs' : jn.join(' · ')) : 'Pick jobs';
-  }
-  const kitOpen = () => { kitdr.classList.add('open'); scrimOn(); kitdr.setAttribute('aria-hidden', 'false'); };
-  const kitClose = () => { kitdr.classList.remove('open'); kitdr.setAttribute('aria-hidden', 'true'); };
-  kitdr.addEventListener('click', e => {
-    const r = e.target.closest('[data-ride]'); if (r) { ride = r.dataset.ride; paintKit(); }
-    const j = e.target.closest('[data-job]'); if (j) { const k = j.dataset.job; jobs.has(k) ? jobs.delete(k) : jobs.add(k); paintKit(); }
-    if (e.target.closest('[data-kit-close]')) { kitClose(); scrimOff(); }
-  });
-  $('#kdAdd').addEventListener('click', () => { kitItems().forEach(k => cart[k] = (cart[k] || 0) + 1); save(); render(); kitClose(); open(); });
-  document.addEventListener('click', e => { if (e.target.closest('[data-kit-open]')) kitOpen(); });
-  paintKit();
-  render();
+  $('#jobs').innerHTML = JOBS.map(j => {
+    const n = P.filter(p => p.g.split(' ').includes(j.f)).length;
+    return `<a class="job" href="#line" data-f="${j.f}"><div><h3>${j.h}</h3><p>${j.p}</p></div>
+      <span class="go" aria-hidden="true">→</span>
+      <div class="bots">${j.b.map(k => `<img src="assets/img/bottles/${k}-sm.webp" alt="" loading="lazy" />`).join('')}</div>
+      <p class="kick" style="margin-top:14px">${n} formulas</p></a>`;
+  }).join('');
+  $('#jobs').addEventListener('click', e => { const a = e.target.closest('.job'); if (a) filter(a.dataset.f); });
+
+  /* ---------- kits (their Shopify kit photos) ---------- */
+  const KITS = [
+    { k: 'platinum', n: ['The Platinum', 'System'], fn: 'Every formula, brush and towel we make.', price: 500, v: 59889398513745, big: 1, tag: 'Everything' },
+    { k: 'essentials', n: ['Essentials', 'Kit'], fn: 'LuxPro + InteriorX + TireVenom', price: 39.99, v: 62697809150033, tag: 'Start here' },
+    { k: 'foam', n: ['Foam Wash', 'System'], fn: 'LuxCannon + 2× LuxFoam', price: 79.99, v: 59835928772689 },
+    { k: 'paint', n: ['Paint Care', 'System'], fn: 'LuxPro, LuxQuick, CeramicX + towels', price: 72.99, v: 59835922219089 },
+    { k: 'rimtire', n: ['Rim & Tire', 'System'], fn: 'WheelAssassin, TireVenom, brushes + pads', price: 85.99, v: 59835924316241 },
+  ];
+  $('#kitgrid').innerHTML = KITS.map(k => `
+    <article class="kit${k.big ? ' big' : ''}">${k.tag ? `<span class="tag">${k.tag}</span>` : ''}
+      <figure><img src="assets/img/kits/${k.k}.webp" alt="${k.n.join(' ')}" loading="lazy" /></figure>
+      <h3>${k.n[0]} <em>${k.n[1]}</em></h3><p>${k.fn}</p>
+      <div class="buy"><span class="pr">$${k.price % 1 ? k.price.toFixed(2) : k.price}</span><a class="btn solid sm" href="${cartURL(k.v)}">Add to cart</a></div>
+    </article>`).join('');
+
+  /* ---------- real footage (TikTok @lusterluxcarcare); product tags from their own captions ---------- */
+  const REELS = [
+    ['foam', 'LuxFoam', 'Foam wash at sunset'], ['chase', 'LuxPro', 'Co-founder Chase'], ['wheel', 'WheelAssassin', 'Filthy wheels, sorted'],
+    ['shop', 'LuxPro', 'Wipe-down in the shop'], ['tire', 'WheelAssassin', 'Foamed & scrubbed'], ['meet', 'Pop-up meet', 'Arizona, after dark'],
+  ];
+  const reels = $('#reels');
+  reels.innerHTML = REELS.map(([v, t, s]) => `<figure class="reel"><video muted loop playsinline preload="none" poster="assets/wall/${v}.jpg" data-src="assets/wall/${v}.mp4"></video><figcaption><b>${t}</b>${s}</figcaption></figure>`).join('');
+  const rv = $$('video', reels);
+  new IntersectionObserver(es => es.forEach(e => {
+    rv.forEach(v => { if (e.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause(); });
+  }), { threshold: .2 }).observe(reels);
+
+  /* ---------- hero slides: the formula holds until the lineup lands, then the covers cycle ---------- */
+  const slides = $$('.slide'), nav = $('#snav'), btns = $$('button', nav), stage = $('#stage');
+  let cur = 0, timer = null, auto = true;
+  const DUR = 7000;
+  const go = i => {
+    cur = i;
+    slides.forEach(s => s.classList.toggle('is-on', +s.dataset.i === i));
+    btns.forEach(b => b.setAttribute('aria-selected', +b.dataset.i === i));
+    window.__hero && window.__hero.active(i === 0);
+    schedule();
+  };
+  const schedule = () => {
+    clearTimeout(timer);
+    if (!auto) { nav.classList.add('hold'); return; }
+    const wait = cur === 0 ? (stage.classList.contains('ready') ? DUR : 0) : DUR;
+    nav.classList.toggle('hold', cur === 0 && !stage.classList.contains('ready'));
+    if (wait) { nav.style.setProperty('--dur', wait + 'ms'); timer = setTimeout(() => go((cur + 1) % slides.length), wait); }
+  };
+  btns.forEach(b => b.addEventListener('click', () => { auto = false; go(+b.dataset.i); }));
+  $('.hero').addEventListener('mouseenter', () => { clearTimeout(timer); });
+  $('.hero').addEventListener('mouseleave', () => schedule());
+  // when the 3D lineup has landed, give it a full slide of time before the first cover
+  new MutationObserver(() => { if (stage.classList.contains('ready') && cur === 0) { nav.classList.remove('hold'); schedule(); } }).observe(stage, { attributes: true, attributeFilter: ['class'] });
+  nav.classList.add('hold');
+  // safety net: if WebGL is slow or unavailable, never leave the hero copy hidden
+  setTimeout(() => { stage.classList.add('formed'); }, 6500);
+  setTimeout(() => { if (!stage.classList.contains('ready')) stage.classList.add('ready'); }, 9500);
 })();
