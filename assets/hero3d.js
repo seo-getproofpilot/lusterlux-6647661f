@@ -238,12 +238,13 @@ function layout() {
   mobile = innerWidth <= 900;
   const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   // the lineup fills the right ~60% on desktop, the full width on phones
-  const span = 14.2, share = mobile ? .98 : .57;
+  const span = 14.2, share = mobile ? .98 : .46;
   const viewW = span / share, dW = viewW / 2 / (tanV * camera.aspect);
-  const dH = 6.6 / (2 * tanV * (mobile ? .8 : .78));
+  const dH = 6.6 / (2 * tanV * (mobile ? .8 : .44));
   const d = Math.max(dW, dH);
-  const shiftX = mobile ? 0 : viewW * (.705 - .5);                 // centre the group at ~71% across, clear of the copy
-  camEnd.tgt.set(-shiftX, 3.35, .2); camEnd.pos.set(-shiftX, 3.0, d);   // low, near-level product angle; bases sit low in frame
+  const shiftX = mobile ? 0 : viewW * (.68 - .5);                 // centre the group at ~71% across, clear of the copy
+  const hh = d * tanV, ty = mobile ? 3.35 : .74 * hh;           // desktop: the bottles stand along the bottom of the frame, the car reads above them
+  camEnd.tgt.set(-shiftX, ty, .2); camEnd.pos.set(-shiftX, mobile ? 3.0 : ty - .6, d);
   const ds = 6.4 / (2 * tanV * .72);
   camSolo.tgt.set(mobile ? 0 : -ds * tanV * camera.aspect * .24, 3.1, 1.3); camSolo.pos.set(camSolo.tgt.x, 3.9, 1.3 + ds);
   world.position.x = 0;

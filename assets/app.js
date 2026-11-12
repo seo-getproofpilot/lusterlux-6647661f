@@ -70,7 +70,7 @@
   grid.innerHTML = P.map(p => `
     <article class="card" id="p-${p.k}" data-g="${p.g}" style="--c:${p.c}">
       <i class="dot"></i>
-      <figure><img src="assets/img/bottles/${p.k}.webp" alt="${p.a}${p.b} ${p.fn}" loading="lazy" decoding="async" /></figure>
+      <figure class="plinth"><span class="pl-lines"></span><img class="pl-mark" src="assets/img/brand/mark.webp" alt="" /><span class="pl-name">${(p.a + p.b).toUpperCase()}</span><img class="pl-btl" src="assets/img/bottles/${p.k}.webp" alt="${p.a}${p.b} ${p.fn}" loading="lazy" decoding="async" /></figure>
       <h3 class="nm">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
       <p class="fn">${p.fn}</p>
       <p class="sp">${p.per}${p.s2 ? ' · ' + p.s2[1] : ''}</p>
@@ -101,18 +101,18 @@
   /* ================= KIT BUILDER ================= */
   const Q = [
     { id: 'lvl', h: 'How much detailing <em>have you done?</em>', o: [
-      ['new', 'Basically none', 'It goes through the automatic wash, if anything.', 'assets/img/photo/luxpro-hand.webp'],
-      ['some', 'I wash it myself', 'Weekends in the driveway with a bucket.', 'assets/wall/tire.jpg'],
-      ['pro', 'I take it seriously', 'For fun, for the meets, or for money.', 'assets/wall/wheel.jpg'] ] },
+      ['new', 'Basically none', 'It’s never had a real detail. Dust, film, the works.', 'assets/img/kb/new.webp'],
+      ['some', 'I wash it myself', 'Weekends in the driveway with a bucket.', 'assets/img/kb/some.webp'],
+      ['pro', 'I take it seriously', 'Garage setup, the right towels, for the meets or for money.', 'assets/img/kb/pro.webp'] ] },
     { id: 'job', h: 'What bugs you most <em>about your car?</em>', o: [
-      ['paint', 'Dull, dusty paint', 'Water spots, fingerprints, no gloss.', 'assets/wall/shop.jpg'],
-      ['wheel', 'Wheels & tires', 'Brake dust on the rims, brown sidewalls.', 'assets/img/photo/tirevenom-mesh.webp'],
+      ['paint', 'Dull, dusty paint', 'Water spots, fingerprints, no gloss.', 'assets/img/kb/paint.webp'],
+      ['wheel', 'Wheels & tires', 'Brake dust on the rims, brown sidewalls.', 'assets/img/kb/wheel.webp'],
       ['int', 'The inside', 'Grimy dash, sticky console, faded trim.', 'assets/img/photo/interiorx-seat.webp'],
       ['all', 'All of it', 'Start to finish, inside and out.', 'assets/hero/studio-m.webp', 'wide'] ] },
     { id: 'h2o', h: 'Where do <em>you wash?</em>', o: [
       ['none', 'No hose', 'Apartment, parking garage, HOA rules.', 'assets/img/photo/towels-carbon.webp'],
-      ['hose', 'Driveway & a hose', 'Bucket, hose, the usual.', 'assets/wall/foam.jpg'],
-      ['pw', 'Pressure washer', 'Ready for a foam cannon.', 'assets/img/kits/foam.webp', 'prod'] ] },
+      ['hose', 'Driveway & a hose', 'Bucket, hose, a pump sprayer.', 'assets/img/kb/hose.webp'],
+      ['pw', 'Pressure washer', 'Ready for a foam cannon.', 'assets/img/kb/pw.webp'] ] },
   ];
   // what's inside each kit (from their listings): bottles, plus the hardware that comes with them
   const HAS = { platinum: P.filter(p => p.g !== 'golf').map(p => p.k), essentials: ['luxpro', 'interiorx', 'tirevenom'], paint: ['luxpro', 'luxquick', 'ceramicx'], rimtire: ['wheelassassin', 'tirevenom'], foam: ['luxfoam', 'luxfoam'] };
@@ -272,7 +272,7 @@
 
   /* reveal on scroll */
   const rio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('seen'); rio.unobserve(e.target); } }), { threshold: .15 });
-  $$('.sec-head, .card, .kit, .story figure, .st-copy, .rv-row figure, .trust p').forEach(el => { el.classList.add('rv'); rio.observe(el); });
+  $$('.sec-head, .card, .kit, .story figure, .st-copy, .rv-row figure').forEach(el => { el.classList.add('rv'); rio.observe(el); });
 
   /* hero safety net: if WebGL is slow or unavailable, never leave the hero copy hidden */
   const stage = $('#stage');
