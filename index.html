@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/site.css?v=6" />
+<link rel="stylesheet" href="assets/site.css?v=7" />
 <script>document.documentElement.classList.add('js')</script>
 <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
 </head>
@@ -36,20 +36,22 @@
   <section class="s-formula" id="stage" aria-label="The LusterLux formula">
     <canvas id="gl" aria-label="LusterLux molecules condensing into a bottle of LuxPro, then the range lining up in front of a grey McLaren"></canvas>
         <div class="h-copy">
-      <img class="h-badge" src="assets/img/brand/badge.webp" alt="LusterLux Detailing Products" width="168" height="168" />
       <p class="kick">Detailing products · Arizona</p>
       <h1>Showroom shine, <em>bottled.</em></h1>
-      <div class="h-card" id="hcard" aria-live="polite">
-        <div class="hc-top"><span class="hc-n" id="hcN">01 / 08</span><span class="hc-nav"><button type="button" id="hcPrev" aria-label="Previous formula">‹</button><button type="button" id="hcNext" aria-label="Next formula">›</button></span></div>
-        <div class="hc-body" id="hcBody"></div>
-        <div class="hc-bar"><i id="hcBar"></i></div>
-      </div>
+      <p class="lede">Eight formulas from two Arizona detailers. Foam, wash, protect, wheels, tires and interior, one line.</p>
       <div class="ctas">
         <a class="btn solid" href="#theater">Shop the line</a>
         <a class="btn chrome" href="#finder">Build my kit</a>
       </div>
+      <p class="h-proof"><b>★★★★★</b> 5.00 from 20 reviews <span>·</span> Ships free over $35</p>
     </div>
-    <p class="hint">Click any bottle to bring it forward</p>
+    <div class="h-strip" id="hcard" aria-live="polite">
+      <button type="button" class="hs-arrow" id="hcPrev" aria-label="Previous formula">‹</button>
+      <span class="hs-n" id="hcN">01 / 08</span>
+      <div class="hs-body" id="hcBody"></div>
+      <button type="button" class="hs-arrow" id="hcNext" aria-label="Next formula">›</button>
+      <div class="hs-bar"><i id="hcBar"></i></div>
+    </div>
   </section>
 </header>
 
@@ -153,8 +155,8 @@
   <p class="note">A ProofPilot concept for LusterLux. Products, prices, reviews, photos and videos are LusterLux's. The 3D bottles are built from their studio photos and labels; the hero car is their own photo, set in a drawn studio.</p>
 </footer>
 
-<script src="assets/app.js?v=6" defer></script>
-<script type="module" src="assets/hero3d.js?v=6"></script>
+<script src="assets/app.js?v=7" defer></script>
+<script type="module" src="assets/hero3d.js?v=7"></script>
 <script type="module" src="assets/theater3d.js?v=2"></script>
 </body>
 </html>

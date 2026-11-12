@@ -26,19 +26,12 @@ const rim = new THREE.DirectionalLight(0x9be014, 1.6); rim.position.set(4, 6, -8
 scene.add(new THREE.HemisphereLight(0xdfffe0, 0x0a0f08, .45));
 const camera = new THREE.PerspectiveCamera(26, 1, .05, 200);
 
-/* ---------- backdrop: LusterLux's own pop-up meet footage (tools: assets/hero/meet-bg.mp4, cut from their TikTok,
-   defocused like a lens behind product), with the neon wordmark added on top ---------- */
-const vid = document.createElement('video');
-Object.assign(vid, { src: 'assets/hero/meet-bg.mp4', muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', crossOrigin: 'anonymous' });
-vid.setAttribute('muted', ''); vid.setAttribute('playsinline', '');
-vid.play().catch(() => {});
-const vidT = new THREE.VideoTexture(vid); vidT.colorSpace = THREE.SRGBColorSpace;
-const posterT = new THREE.TextureLoader().load('assets/hero/meet-bg.jpg'); posterT.colorSpace = THREE.SRGBColorSpace;
+/* ---------- backdrop: a still from LusterLux's own car-show booth video (assets/hero/show.webp), with the neon LL on top ---------- */
+const photoT = new THREE.TextureLoader().load(innerWidth <= 900 ? 'assets/hero/show-m.webp' : 'assets/hero/show.webp'); photoT.colorSpace = THREE.SRGBColorSpace;
 const neonC = document.createElement('canvas');
 const neonT = new THREE.CanvasTexture(neonC); neonT.colorSpace = THREE.SRGBColorSpace;
-const bgU = { uVid: { value: posterT }, uNeon: { value: neonT }, uOn: { value: 0 }, uFoot: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
+const bgU = { uVid: { value: photoT }, uNeon: { value: neonT }, uOn: { value: 0 }, uFoot: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
   uAsp: { value: 16 / 9 }, uHz: { value: .4 }, uFocus: { value: new THREE.Vector2(.5, .5) } };
-vid.addEventListener('playing', () => { bgU.uVid.value = vidT; }, { once: true });
 const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
   uniforms: bgU, depthWrite: false, depthTest: false,
   vertexShader: 'void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }',
@@ -49,9 +42,9 @@ const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMat
       vec2 sc = ra > uAsp ? vec2(1.0, uAsp / ra) : vec2(ra / uAsp, 1.0);
       vec3 v = texture2D(uVid, uFocus + (s - .5) * sc).rgb;
       // grade: pull the footage down so the neon and the bottles carry the frame; keep its own greens
-      v = pow(v, vec3(1.2)) * .46;
+      v = pow(v, vec3(1.15)) * .6;
       // the copy side and the ground in front of the bottles sit darker
-      float dark = .62 * (1.0 - smoothstep(.05, .5, s.x)) * step(1.0, ra) + .4 * smoothstep(uHz, uHz - .3, s.y);
+      float dark = .5 * (1.0 - smoothstep(.0, .46, s.x)) * step(1.0, ra) + .25 * smoothstep(uHz, uHz - .4, s.y);
       v *= 1.0 - dark;
       float vg = length((s - vec2(.6, .55)) * vec2(1.1, 1.0));
       v *= 1.0 - .6 * smoothstep(.35, 1.0, vg);
@@ -62,50 +55,49 @@ const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMat
 bgQuad.frustumCulled = false; bgQuad.renderOrder = -1000; scene.add(bgQuad);
 
 let fontReady = false;
-document.fonts.load('italic 900 120px Archivo').then(() => { fontReady = true; layout(); });
+fontReady = true;
 const paintState = {};
 function paint() {
   const { w, h, hz, nx, ny, fs } = paintState; if (!w) return;
   neonC.width = w; neonC.height = h;
   const x = neonC.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
-  if (fontReady) {
-    x.font = `italic 900 ${fs}px Archivo`; try { x.fontStretch = 'expanded'; } catch (e) {}
-    const wa = x.measureText('LUSTER').width, wb = x.measureText('LUX').width, lines = fs * .9;
-    const total = wa + wb + lines, x0 = nx - total / 2;
-    const glow = (col, draw, lw) => {
-      x.lineJoin = 'round'; x.lineCap = 'round';
-      for (const [blur, k, a] of [[fs * .55, 1.75, .45], [fs * .22, 1.4, .7], [fs * .06, 1, .95]]) {
-        x.save(); x.shadowColor = col; x.shadowBlur = blur; x.globalAlpha = a; x.strokeStyle = col; x.lineWidth = lw * k; draw(); x.restore();
-      }
-    };
-    const tube = (txt, tx, ty, col, core) => {
-      glow(col, () => x.strokeText(txt, tx, ty), fs * .04);
-      x.save(); x.strokeStyle = core; x.lineWidth = fs * .016; x.strokeText(txt, tx, ty); x.restore();
-    };
-    // two water lines under the word, like the splash under the LL on their badge
-    const wave = (y0, amp, ph, col, core) => {
-      const path = () => { x.beginPath(); for (let i = 0; i <= 80; i++) { const t = i / 80, px = x0 + fs * .05 + t * (wa + wb - fs * .1); const py = y0 + Math.sin(t * Math.PI * 4 + ph) * amp * (0.35 + 0.65 * Math.sin(t * Math.PI)); i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); };
-      glow(col, path, fs * .03);
-      x.save(); x.strokeStyle = core; x.lineWidth = fs * .011; x.lineCap = 'round'; path(); x.restore();
-    };
-    const sign = flip => {
-      x.save();
-      if (flip) { x.translate(0, hz * 2); x.scale(1, -1); x.globalAlpha = .2; x.filter = `blur(${Math.round(fs * .06)}px)`; }
-      tube('LUSTER', x0, ny, '#d9ecff', '#ffffff');
-      tube('LUX', x0 + wa, ny, '#8cd20a', '#eaffb8');
-      const lx = x0 + wa + wb + fs * .12;
-      for (let i = 0; i < 4; i++) {
-        const yy = ny - fs * (.72 - i * .17), len = lines * (1 - i * .2);
-        x.save(); x.shadowColor = '#8cd20a'; x.shadowBlur = fs * .25; x.strokeStyle = '#8cd20a'; x.lineWidth = fs * .045; x.lineCap = 'round';
-        x.beginPath(); x.moveTo(lx + fs * .1 * i, yy); x.lineTo(lx + fs * .1 * i + len * .7, yy); x.stroke();
-        x.strokeStyle = '#eaffb8'; x.lineWidth = fs * .014; x.shadowBlur = 0; x.stroke(); x.restore();
-      }
-      wave(ny + fs * .32, fs * .07, 0, '#1fb4e8', '#d6f6ff');
-      wave(ny + fs * .5, fs * .05, 1.6, '#1fb4e8', '#bdefff');
-      x.restore();
-    };
-    sign(false); sign(true);
-  }
+  const H = fs * 1.9;                                     // letter height
+  const glow = (col, draw, lw) => {
+    x.lineJoin = 'round'; x.lineCap = 'round';
+    for (const [blur, k, a] of [[H * .22, 1.8, .45], [H * .09, 1.4, .7], [H * .025, 1, .95]]) {
+      x.save(); x.shadowColor = col; x.shadowBlur = blur; x.globalAlpha = a; x.strokeStyle = col; x.lineWidth = lw * k; draw(); x.restore();
+    }
+  };
+  // one slab-serif italic L, as an outline (the badge letters are outlined)
+  const L = (ox, oy, col, core) => {
+    const pts = [[0, 0], [.84, 0], [.84, .2], [.74, .25], [.3, .25], [.3, .9], [.4, .9], [.4, 1], [-.1, 1], [-.1, .9], [0, .9]];
+    const path = () => { x.beginPath(); pts.forEach(([px, py], i) => { const X = ox + (px + py * .24) * H, Y = oy - py * H; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.closePath(); };
+    x.save(); path(); x.fillStyle = col; x.globalAlpha = .07; x.fill(); x.restore();
+    glow(col, () => { path(); x.stroke(); }, H * .036);
+    x.save(); path(); x.strokeStyle = core; x.lineWidth = H * .016; x.stroke(); x.restore();
+  };
+  const wave = (x0, x1, y0, amp, ph) => {
+    const path = () => { x.beginPath(); for (let i = 0; i <= 90; i++) { const t = i / 90, px = x0 + t * (x1 - x0); const py = y0 - Math.sin(t * Math.PI) * amp * .6 + Math.sin(t * Math.PI * 5 + ph) * amp * .35; i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); };
+    glow('#1fb4e8', path, H * .02);
+    x.save(); x.strokeStyle = '#d6f6ff'; x.lineWidth = H * .008; x.lineCap = 'round'; path(); x.restore();
+  };
+  const sign = flip => {
+    x.save();
+    if (flip) { x.translate(0, hz * 2); x.scale(1, -1); x.globalAlpha = .18; x.filter = `blur(${Math.round(H * .025)}px)`; }
+    const total = H * 1.95, x0 = nx - total / 2, base = ny + H * .45;
+    L(x0, base - H * .14, '#dfeeff', '#ffffff');
+    L(x0 + H * .78, base, '#8cd20a', '#eaffb8');
+    // speed lines off the top right, like the badge
+    for (let i = 0; i < 5; i++) {
+      const yy = base - H * (1.02 - i * .1), sx = x0 + H * (1.55 + i * .06);
+      x.save(); x.shadowColor = '#8cd20a'; x.shadowBlur = H * .08; x.strokeStyle = '#8cd20a'; x.lineWidth = H * .022; x.lineCap = 'round';
+      x.beginPath(); x.moveTo(sx, yy); x.lineTo(sx + H * (.42 - i * .05), yy - H * .16); x.stroke(); x.restore();
+    }
+    wave(x0 - H * .25, x0 + total + H * .1, base + H * .1, H * .16, 0);
+    wave(x0 - H * .1, x0 + total, base + H * .2, H * .1, 1.7);
+    x.restore();
+  };
+  sign(false); sign(true);
   neonT.needsUpdate = true;
 }
 
@@ -175,8 +167,9 @@ function layout() {
   // size the sign to fit its column: ~52% of the width on desktop, ~88% on phones
   const mc = document.createElement('canvas').getContext('2d'); mc.font = 'italic 900 100px Archivo'; try { mc.fontStretch = 'expanded'; } catch (e) {}
   const unit = (mc.measureText('LUSTERLUX').width + 90 + 12) / 100;
-  const fs = Math.min(W * (mobile ? .88 : .5) / unit, H * .15);
-  const ny = Math.max(fs * 1.15, Math.min(backTop - fs * .85, hz - fs * .75));
+  const [, frontTop] = proj(0, 6.2, .9, camRing);
+  const fs = Math.min(W * (mobile ? .2 : .085), (frontTop - 20) / 1.9 / 1.75);   // LL height = 1.9fs, fits above the front cap with its waves
+  const ny = frontTop - fs * 1.05;
   Object.assign(paintState, { w: Math.round(W * k), h: Math.round(H * k), hz: hz * k, nx: nx * k, ny: ny * k, fs: fs * k });
   bgU.uHz.value = 1 - hz / H; bgU.uFocus.value.set(mobile ? .5 : .55, .52);
   paint();

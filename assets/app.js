@@ -114,9 +114,9 @@
     $('#hcN').textContent = `${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
     hcard.style.setProperty('--c', p.c);
     hcBody.classList.remove('in'); void hcBody.offsetWidth;
-    hcBody.innerHTML = `<p class="hc-fn">${p.fn}</p><h3 class="hc-name">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></h3>
-      <p class="hc-d">${(COPY[k] || {}).tag || p.d}</p>
-      <div class="hc-buy"><b>${money(p.price)}</b><span>${p.per}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a></div>`;
+    hcBody.innerHTML = `<b class="hs-name">${p.a.toUpperCase()}<em>${p.b.toUpperCase()}</em></b>
+      <span class="hs-tag">${(COPY[k] || {}).tag || p.fn}</span>
+      <span class="hs-price">${money(p.price)}</span><a class="btn solid sm" href="${cartURL(p.v)}">Add to cart</a>`;
     hcBody.classList.add('in');
     hcBar.style.animation = 'none'; void hcBar.offsetWidth; hcBar.style.animation = `hcbar ${hold}s linear forwards`;
   };
