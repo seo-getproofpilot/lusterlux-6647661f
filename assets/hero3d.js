@@ -35,11 +35,11 @@ const bgC = document.createElement('canvas'); bgC.width = 16; bgC.height = 512;
 { const x = bgC.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 512);
   g.addColorStop(0, '#fbfaf7'); g.addColorStop(.55, '#f1f0eb'); g.addColorStop(1, '#e4e2db'); x.fillStyle = g; x.fillRect(0, 0, 16, 512); }
 const sweepTex = new THREE.CanvasTexture(bgC); sweepTex.colorSpace = THREE.SRGBColorSpace;
-// backdrop: the studio sweep while the formula builds, then LusterLux's own photo of a washed McLaren fades in behind the lineup.
+// backdrop: the studio sweep while the formula builds, then LusterLux's own McLaren (cut from their photo, set in a drawn studio) fades in.
 // A full-screen quad (not scene.background) so the cover crop can be aimed, and so the glass refracts the car.
-const carTex = new THREE.TextureLoader().load('assets/hero/car.webp'); carTex.colorSpace = THREE.SRGBColorSpace;
+const carTex = new THREE.TextureLoader().load(innerWidth <= 900 ? 'assets/hero/studio-m.webp' : 'assets/hero/studio.webp'); carTex.colorSpace = THREE.SRGBColorSpace;
 const bgU = { uSweep: { value: sweepTex }, uCar: { value: carTex }, uMix: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
-  uImg: { value: 1920 / 1080 }, uFocus: { value: new THREE.Vector2(.5, .5) }, uZoom: { value: 1 }, uWash: { value: 0 }, uPar: { value: new THREE.Vector2() } };
+  uImg: { value: 2 }, uFocus: { value: new THREE.Vector2(.5, .5) }, uZoom: { value: 1 }, uWash: { value: 0 }, uPar: { value: new THREE.Vector2() } };
 const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
   uniforms: bgU, depthWrite: false, depthTest: false,
   vertexShader: 'void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }',
@@ -54,8 +54,7 @@ const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMat
       vec3 sw = texture2D(uSweep, vec2(.5, s.y)).rgb;
       // keep the copy side readable: wash the left of the frame back toward the page tone
       float w = uWash * (1.0 - smoothstep(.2, .46, s.x));
-      w = max(w, uWash * .9 * (1.0 - smoothstep(.0, .13, s.y)));   // and under the slide tabs
-      car = mix(car, vec3(.93, .925, .9), w);
+      car = mix(car, vec3(.95, .953, .948), w);
       gl_FragColor = vec4(mix(sw, car, uMix), 1.0);
       #include <colorspace_fragment>
     }` }));
@@ -239,18 +238,18 @@ function layout() {
   mobile = innerWidth <= 900;
   const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   // the lineup fills the right ~60% on desktop, the full width on phones
-  const span = 14.2, share = mobile ? .98 : .6;
+  const span = 14.2, share = mobile ? .98 : .57;
   const viewW = span / share, dW = viewW / 2 / (tanV * camera.aspect);
   const dH = 6.6 / (2 * tanV * (mobile ? .8 : .78));
   const d = Math.max(dW, dH);
-  const shiftX = mobile ? 0 : viewW * (.69 - .5);                 // centre the group at ~71% across, clear of the copy
+  const shiftX = mobile ? 0 : viewW * (.705 - .5);                 // centre the group at ~71% across, clear of the copy
   camEnd.tgt.set(-shiftX, 3.35, .2); camEnd.pos.set(-shiftX, 3.0, d);   // low, near-level product angle; bases sit low in frame
   const ds = 6.4 / (2 * tanV * .72);
   camSolo.tgt.set(mobile ? 0 : -ds * tanV * camera.aspect * .24, 3.1, 1.3); camSolo.pos.set(camSolo.tgt.x, 3.9, 1.3 + ds);
   world.position.x = 0;
   renderer.getDrawingBufferSize(bgU.uRes.value);
   // aim the crop: car nose behind the lineup on desktop; on phones the car fills the strip above the copy
-  bgU.uFocus.value.set(mobile ? .55 : .43, mobile ? .5 : .5); bgU.uZoom.value = mobile ? 1.0 : 1.1; bgU.uWash.value = mobile ? 0 : .66;
+  bgU.uFocus.value.set(mobile ? .62 : .5, mobile ? .5 : .5); bgU.uZoom.value = mobile ? 1.0 : 1.0; bgU.uWash.value = mobile ? 0 : .35;
 }
 layout(); addEventListener('resize', layout);
 
