@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Cinzel:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/site.css?v=1" />
+<link rel="stylesheet" href="assets/site.css?v=2" />
 <script>document.documentElement.classList.add('js')</script>
 <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
 </head>
@@ -22,7 +22,8 @@
   <a class="logo" href="#top" aria-label="LusterLux home"><img src="assets/img/brand/badge.webp" alt="" width="46" height="46" /><span class="wm"><b>LUSTER</b><i>LUX</i></span></a>
   <ul>
     <li><a href="#line">Shop</a></li>
-    <li><a href="#kits">Kits</a></li>
+    <li><a href="#finder">Find my kit</a></li>
+      <li><a href="#kits">Kits</a></li>
     <li><a href="#real">On real cars</a></li>
     <li><a href="#story">Our story</a></li>
   </ul>
@@ -41,7 +42,7 @@
       <p class="lede">Eight formulas built and tested by two detailers who washed a rental fleet every day for four years. Foam to tire shine, one line.</p>
       <div class="ctas">
         <a class="btn solid" href="#line">Shop the line</a>
-        <a class="btn ghost" href="#kits">Build a kit</a>
+        <a class="btn ghost" href="#finder">Find my kit</a>
       </div>
       <p class="hint">Hover a bottle to meet it</p>
     </div>
@@ -86,8 +87,18 @@
   <p><b>USA</b><span>proudly made here</span></p>
 </section>
 
+<section class="finder" id="finder" aria-label="Kit finder">
+  <div class="f-intro">
+    <p class="kick">New to detailing?</p>
+    <h2>Three questions. <em>One kit that fits.</em></h2>
+    <p class="lede">Tell us where you're starting from and what bugs you about your car. We'll pick the bottles, show you the order to use them in, and put it all in one cart.</p>
+    <ol class="f-steps" id="fsteps"><li class="on">Experience</li><li>The problem</li><li>Where you wash</li></ol>
+  </div>
+  <div class="f-card" id="fcard" aria-live="polite"></div>
+</section>
+
 <section class="jobs" aria-label="Shop by job">
-  <div class="sec-head"><p class="kick">Start here</p><h2>What are you <em>cleaning?</em></h2></div>
+  <div class="sec-head"><p class="kick">Shop by job</p><h2>What are you <em>cleaning?</em></h2></div>
   <div class="job-grid" id="jobs"></div>
 </section>
 
@@ -186,7 +197,7 @@
   <p class="note">A ProofPilot concept for LusterLux. Products, prices, reviews, photos and videos are LusterLux's. The 3D bottles are built from their studio photos and labels.</p>
 </footer>
 
-<script src="assets/app.js?v=1" defer></script>
-<script type="module" src="assets/hero3d.js?v=1"></script>
+<script src="assets/app.js?v=2" defer></script>
+<script type="module" src="assets/hero3d.js?v=2"></script>
 </body>
 </html>

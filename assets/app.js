@@ -67,6 +67,101 @@
       <div class="buy"><span class="pr">$${k.price % 1 ? k.price.toFixed(2) : k.price}</span><a class="btn solid sm" href="${cartURL(k.v)}">Add to cart</a></div>
     </article>`).join('');
 
+
+  /* ---------- kit finder: three questions → a kit built only from their real kits and bottles ---------- */
+  const fcard = $('#fcard'), fsteps = $$('#fsteps li');
+  const Q = [
+    { id: 'lvl', h: 'How much detailing have you done?', o: [
+      ['new', 'Basically none', 'It goes through the automatic wash, if anything.'],
+      ['some', 'I wash it myself', 'Weekends in the driveway, a bucket and a sponge.'],
+      ['pro', 'I take it seriously', 'For fun, for the meets, or for money.'] ] },
+    { id: 'job', h: 'What bugs you most about your car?', o: [
+      ['paint', 'Dull, dusty paint', 'Water spots, fingerprints, no gloss.'],
+      ['wheel', 'Wheels and tires', 'Brake dust on the rims, brown sidewalls.'],
+      ['int', 'The inside', 'Grimy dash, sticky console, faded trim.'],
+      ['all', 'All of it', 'Start to finish, inside and out.'] ] },
+    { id: 'h2o', h: 'Where do you wash?', o: [
+      ['none', 'No hose', 'Apartment, parking garage, HOA rules.'],
+      ['hose', 'Driveway with a hose', 'Bucket, hose, the usual.'],
+      ['pw', 'I own a pressure washer', 'Ready for a foam cannon.'] ] },
+  ];
+  // what's inside each kit (from their listings), so a kit never gets a duplicate single beside it
+  const HAS = { platinum: P.map(p => p.k), essentials: ['luxpro', 'interiorx', 'tirevenom'], paint: ['luxpro', 'luxquick', 'ceramicx'], rimtire: ['wheelassassin', 'tirevenom'], foam: ['luxfoam'] };
+  // the order you use them in, with one line each
+  const HOW = [
+    ['luxfoam', 'Foam the car top-down, then rinse.'],
+    ['wheelassassin', 'Wheels first: spray, agitate with a brush, rinse.'],
+    ['luxpro', 'Mist one panel, wipe in one direction, buff dry with a clean towel.'],
+    ['ceramicx', 'On clean paint: spray, spread, buff for gloss and protection.'],
+    ['luxquick', 'Between washes: mist and buff off dust and fingerprints.'],
+    ['tirevenom', 'Last thing outside: dressing on an applicator pad, then the sidewall.'],
+    ['interiorx', 'Inside: spray onto a towel, wipe dash, console and seats.'],
+    ['restorx', 'Finish plastic and vinyl trim for a dark, dry look.'],
+  ];
+  const kitOf = k => KITS.find(x => x.k === k), prod = k => P.find(x => x.k === k);
+  const pick = a => {
+    const out = [];
+    const add = (t, k, why) => { if (!out.some(i => i.k === k)) out.push({ t, k, why }); };
+    if (a.lvl === 'pro' && a.job === 'all') add('kit', 'platinum', 'Every formula, brush and towel they make. Nothing to come back for.');
+    else if (a.lvl === 'new') {
+      add('kit', 'essentials', 'The three you’ll use most: wash, interior, tires. Works without a hose.');
+      if (a.job === 'paint' || a.job === 'all') add('p', 'luxquick', 'Keeps the shine between washes.');
+      if (a.job === 'wheel' || a.job === 'all') add('p', 'wheelassassin', 'Brake dust off the rims before the tires get dressed.');
+      if (a.job === 'int') add('p', 'restorx', 'Brings faded plastic and vinyl trim back.');
+    } else {
+      if (a.job === 'paint' || a.job === 'all') add('kit', 'paint', 'Wash, quick detail and ceramic protection, with the towels to do it right.');
+      if (a.job === 'wheel' || a.job === 'all') add('kit', 'rimtire', 'Cleaner, dressing, and the brushes and pads that go with them.');
+      if (a.job === 'int') { add('p', 'interiorx', 'Cleans dash, seats and console without a greasy shine.'); add('p', 'restorx', 'Restores plastic and vinyl trim for up to 8 months.'); }
+    }
+    const inside = new Set(out.filter(i => i.t === 'kit').flatMap(i => HAS[i.k]));
+    if (a.h2o === 'pw' && !out.some(i => i.k === 'platinum')) add('kit', 'foam', 'You have the pressure washer. This is the foam cannon for it, plus two bottles of LuxFoam.');
+    else if (a.h2o === 'hose' && a.lvl !== 'new' && !inside.has('luxfoam')) add('p', 'luxfoam', 'Thick foam soap for the bucket. Good for 8–16 washes.');
+    const hasPro = out.some(i => i.t === 'kit' ? HAS[i.k].includes('luxpro') : i.k === 'luxpro');
+    if (a.h2o === 'none' && !hasPro) add('p', 'luxpro', 'Waterless wash: no hose, no bucket, no driveway.');
+    return out;
+  };
+  const TITLE = { new: ['Your starter kit', 'Start here. Everything below works on day one.'], some: ['Your weekend setup', 'Built around the thing that bugs you most.'], pro: ['Your full setup', 'The pro-grade version of your routine.'] };
+  let step = 0, ans = {};
+  const renderQ = () => {
+    fsteps.forEach((li, i) => { li.classList.toggle('on', i === step); li.classList.toggle('done', i < step); });
+    const q = Q[step];
+    fcard.innerHTML = `<p class="f-n">Question ${step + 1} of 3</p><h3>${q.h}</h3>
+      <div class="f-opts">${q.o.map(([v, t, d]) => `<button type="button" class="f-opt${ans[q.id] === v ? ' sel' : ''}" data-v="${v}"><b>${t}</b><span>${d}</span><i aria-hidden="true">→</i></button>`).join('')}</div>
+      ${step ? '<button type="button" class="f-back">← Back</button>' : ''}`;
+  };
+  const renderR = () => {
+    fsteps.forEach(li => { li.classList.remove('on'); li.classList.add('done'); });
+    const items = pick(ans), [h, sub] = TITLE[ans.lvl];
+    const row = i => { const x = i.t === 'kit' ? kitOf(i.k) : prod(i.k);
+      const name = i.t === 'kit' ? x.n.join(' ') : x.a + x.b, img = i.t === 'kit' ? `assets/img/kits/${i.k}.webp` : `assets/img/bottles/${i.k}-sm.webp`;
+      return `<label class="f-item"><input type="checkbox" checked data-v="${x.v}" data-p="${x.price}" /><figure class="f-${i.t}"><img src="${img}" alt="" /></figure>
+        <div><b>${name}</b><span>${i.why}</span></div><em>$${x.price % 1 ? x.price.toFixed(2) : x.price}</em></label>`; };
+    const use = new Set(items.flatMap(i => i.t === 'kit' ? HAS[i.k] : [i.k]));
+    const how = HOW.filter(([k]) => use.has(k));
+    fcard.innerHTML = `<p class="f-n">${h}</p><h3>${sub}</h3>
+      <div class="f-items">${items.map(row).join('')}</div>
+      <div class="f-total"><div><span>Total</span><b id="ftot"></b><small id="fship"></small></div><a class="btn solid" id="fadd" href="#">Add all to cart</a></div>
+      <details class="f-how"><summary>Your first detail, in order (${how.length} steps)</summary><ol>${how.map(([k, t]) => { const p = prod(k); return `<li><b>${p.a}${p.b}</b> ${t}</li>`; }).join('')}</ol></details>
+      <button type="button" class="f-back f-redo">↺ Start over</button>`;
+    sum();
+  };
+  const sum = () => {
+    const on = $$('input:checked', fcard), tot = on.reduce((s, i) => s + +i.dataset.p, 0);
+    $('#ftot').textContent = '$' + tot.toFixed(2);
+    $('#fship').textContent = tot >= 35 ? 'Ships free' : tot ? `$${(35 - tot).toFixed(2)} from free shipping` : '';
+    const btn = $('#fadd'); btn.href = on.length ? `${STORE}/cart/${on.map(i => i.dataset.v + ':1').join(',')}` : '#';
+    btn.classList.toggle('off', !on.length);
+  };
+  fcard.addEventListener('click', e => {
+    const o = e.target.closest('.f-opt');
+    if (o) { ans[Q[step].id] = o.dataset.v; step++; step < Q.length ? renderQ() : renderR(); return; }
+    if (e.target.closest('.f-redo')) { step = 0; ans = {}; renderQ(); return; }
+    if (e.target.closest('.f-back')) { step--; renderQ(); return; }
+    if (e.target.closest('#fadd.off')) e.preventDefault();
+  });
+  fcard.addEventListener('change', sum);
+  renderQ();
+
   /* ---------- real footage (TikTok @lusterluxcarcare); product tags from their own captions ---------- */
   const REELS = [
     ['foam', 'LuxFoam', 'Foam wash at sunset'], ['chase', 'LuxPro', 'Co-founder Chase'], ['wheel', 'WheelAssassin', 'Filthy wheels, sorted'],

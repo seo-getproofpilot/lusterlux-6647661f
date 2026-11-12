@@ -34,7 +34,32 @@ const scene = new THREE.Scene();
 const bgC = document.createElement('canvas'); bgC.width = 16; bgC.height = 512;
 { const x = bgC.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 512);
   g.addColorStop(0, '#fbfaf7'); g.addColorStop(.55, '#f1f0eb'); g.addColorStop(1, '#e4e2db'); x.fillStyle = g; x.fillRect(0, 0, 16, 512); }
-scene.background = new THREE.CanvasTexture(bgC); scene.background.colorSpace = THREE.SRGBColorSpace;
+const sweepTex = new THREE.CanvasTexture(bgC); sweepTex.colorSpace = THREE.SRGBColorSpace;
+// backdrop: the studio sweep while the formula builds, then LusterLux's own photo of a washed McLaren fades in behind the lineup.
+// A full-screen quad (not scene.background) so the cover crop can be aimed, and so the glass refracts the car.
+const carTex = new THREE.TextureLoader().load('assets/hero/car.webp'); carTex.colorSpace = THREE.SRGBColorSpace;
+const bgU = { uSweep: { value: sweepTex }, uCar: { value: carTex }, uMix: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) },
+  uImg: { value: 1920 / 1080 }, uFocus: { value: new THREE.Vector2(.5, .5) }, uZoom: { value: 1 }, uWash: { value: 0 }, uPar: { value: new THREE.Vector2() } };
+const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+  uniforms: bgU, depthWrite: false, depthTest: false,
+  vertexShader: 'void main(){ gl_Position = vec4(position.xy, 1.0, 1.0); }',
+  fragmentShader: `uniform sampler2D uSweep, uCar; uniform float uMix, uImg, uZoom, uWash; uniform vec2 uRes, uFocus, uPar;
+    void main(){
+      vec2 s = gl_FragCoord.xy / uRes;
+      float ra = uRes.x / uRes.y;
+      vec2 sc = ra > uImg ? vec2(1.0, uImg / ra) : vec2(ra / uImg, 1.0);   // cover fit
+      sc /= uZoom;
+      vec2 uv = uFocus + (s - .5) * sc + uPar;
+      vec3 car = texture2D(uCar, uv).rgb;
+      vec3 sw = texture2D(uSweep, vec2(.5, s.y)).rgb;
+      // keep the copy side readable: wash the left of the frame back toward the page tone
+      float w = uWash * (1.0 - smoothstep(.2, .46, s.x));
+      w = max(w, uWash * .9 * (1.0 - smoothstep(.0, .13, s.y)));   // and under the slide tabs
+      car = mix(car, vec3(.93, .925, .9), w);
+      gl_FragColor = vec4(mix(sw, car, uMix), 1.0);
+      #include <colorspace_fragment>
+    }` }));
+bgQuad.frustumCulled = false; bgQuad.renderOrder = -1000; scene.add(bgQuad);
 const camera = new THREE.PerspectiveCamera(26, 1, .05, 200);
 
 // studio: strip softboxes baked into an environment map
@@ -168,7 +193,7 @@ const shadowTex = radial([[0, 'rgba(30,28,22,.55)'], [.35, 'rgba(30,28,22,.28)']
 const world = new THREE.Group(); scene.add(world);
 const bottles = LINEUP.map(k => makeBottle(k, { forming: k === HERO }));
 const hero = bottles.find(b => b.k === HERO);
-const SLOT = (i, n) => { const c = (n - 1) / 2, o = i - c; return new THREE.Vector3(o * 2.35, 0, 1.3 - Math.abs(o) * .7); };
+const SLOT = (i, n) => { const c = (n - 1) / 2, o = i - c; return new THREE.Vector3(o * 2.2, 0, 1.6 - Math.abs(o) * 1.25); };
 bottles.forEach((b, i) => {
   b.home = SLOT(i, bottles.length); world.add(b.g);
   b.side = Math.sign(b.home.x) || 0; b.dly = Math.abs(b.home.x) / 2.2 * .16;
@@ -214,15 +239,18 @@ function layout() {
   mobile = innerWidth <= 900;
   const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   // the lineup fills the right ~60% on desktop, the full width on phones
-  const span = 17, share = mobile ? .98 : .56;
+  const span = 14.2, share = mobile ? .98 : .6;
   const viewW = span / share, dW = viewW / 2 / (tanV * camera.aspect);
-  const dH = 7.4 / (2 * tanV * (mobile ? .78 : .74));
+  const dH = 6.6 / (2 * tanV * (mobile ? .8 : .78));
   const d = Math.max(dW, dH);
-  const shiftX = mobile ? 0 : viewW * (.695 - .5);                 // centre the group at ~71% across, clear of the copy
-  camEnd.tgt.set(-shiftX, 2.7, .2); camEnd.pos.set(-shiftX, 4.2, d);
+  const shiftX = mobile ? 0 : viewW * (.69 - .5);                 // centre the group at ~71% across, clear of the copy
+  camEnd.tgt.set(-shiftX, 3.35, .2); camEnd.pos.set(-shiftX, 3.0, d);   // low, near-level product angle; bases sit low in frame
   const ds = 6.4 / (2 * tanV * .72);
   camSolo.tgt.set(mobile ? 0 : -ds * tanV * camera.aspect * .24, 3.1, 1.3); camSolo.pos.set(camSolo.tgt.x, 3.9, 1.3 + ds);
   world.position.x = 0;
+  renderer.getDrawingBufferSize(bgU.uRes.value);
+  // aim the crop: car nose behind the lineup on desktop; on phones the car fills the strip above the copy
+  bgU.uFocus.value.set(mobile ? .55 : .43, mobile ? .5 : .5); bgU.uZoom.value = mobile ? 1.0 : 1.1; bgU.uWash.value = mobile ? 0 : .66;
 }
 layout(); addEventListener('resize', layout);
 
@@ -281,6 +309,8 @@ function frame(now) {
   const cT = Math.min(1, Math.max(0, (T - 4.75) / .7));
   hero.cap.visible = cT > 0; hero.cap.position.y = CAPY + (1 - outBack(cT)) * 1.3; hero.cap.rotation.y = (1 - cT) * -Math.PI * 3;
   hero.sh.material.opacity = .9 * sm(3.0, 4.2, T);
+  bgU.uMix.value = ease(sm(4.4, 6.8, T));
+  bgU.uPar.value.set(px * .012, -py * .008);
 
   // camera: macro → pull back to the single bottle → widen for the lineup
   const pull = ease(sm(.9, 3.3, T)), wide = ease(sm(5.6, 7.2, T));
